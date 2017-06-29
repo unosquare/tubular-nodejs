@@ -1,0 +1,29 @@
+{
+  "name": "tubular-nodejs",
+  "version": "0.1.0",
+  "description": "Tubular Node.js Backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unosquare/tubular-nodejs.git"
+  },
+  "keywords": [
+    "grid",
+    "tubular"
+  ],
+  "author": "Unosquare",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unosquare/tubular-nodejs/issues"
+  },
+  "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
+  "dependencies": {
+    "knex": "^0.13.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.1.1"
+  }
+}
