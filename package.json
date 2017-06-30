@@ -4,7 +4,7 @@
   "description": "Tubular Node.js Backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "knex": "^0.13.0"
   },
   "devDependencies": {
-    "eslint": "^4.1.1"
+    "eslint": "^4.1.1",
+    "jasmine": "^2.6.0"
   }
 }
