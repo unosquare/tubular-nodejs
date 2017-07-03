@@ -49,12 +49,31 @@ class Tubular {
             FilteredRecordCount: dataSource.count('TODO: id should be defined here'),
         };
 
-        // TODO
+        let subset = filterResponse(request, knexQueryBuilder, response);
+
+        subset = applySorting(request, subset);
+    }
+
+    static applySorting(request, subset) {
+        let sortedColumns = request.Columns.filter(column => column.SortOrder > 0);
+
+        if (sortedColumns.length > 0) {
+            sortedColumns = sortedColumns.sort(function (a, b) {
+                return parseFloat(a.price) - parseFloat(b.price);
+            });
+
+            sortedColumns.forEach(column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? "asc" : "desc")))
+        } else {
+            // Default sorting
+            subset.orderBy(request.Columns[0].Name, 'asc');
+        }
+
+        return subset;
     }
 
     static applyFreeTextSearch(request, subset, response) {
         // Free text-search 
-        if (request.Search.Operator) {
+        if (request.Search && request.Search.Operator) {
 
 
             switch (request.Search.Operator) {

@@ -145,4 +145,82 @@ describe("Tubular", function () {
 
         expect(result).toBe(expected);
     });
+
+    it(" sorts by default column", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'Author', Label: 'Author', Sortable: true, Searchable: true },
+                { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
+            ]
+        };
+
+        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Title] asc";
+        let result = Tubular.applySorting(request, filteredResponse).toString();
+
+        expect(result).toBe(expected);
+    });
+
+    it(" sorts by specified column", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 2, SortDirection: 'Ascending', Searchable: true },
+                { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
+            ]
+        };
+
+        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc";
+        let result = Tubular.applySorting(request, filteredResponse).toString();
+
+        expect(result).toBe(expected);
+    });
+
+    it(" sorts by two columns", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 2, SortDirection: 'Ascending', Searchable: true },
+                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 1, SortDirection: 'Descending', Searchable: true }
+            ]
+        };
+
+        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc, [Year] desc";
+        let result = Tubular.applySorting(request, filteredResponse).toString();
+
+        expect(result).toBe(expected);
+    });
 });
