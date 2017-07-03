@@ -1,3 +1,6 @@
+// Load the full build.
+var _ = require('lodash');
+
 
 const CompareOperators = {
     none: 'None',
@@ -49,20 +52,22 @@ class Tubular {
             FilteredRecordCount: dataSource.count('TODO: id should be defined here'),
         };
 
-        let subset = filterResponse(request, knexQueryBuilder, response);
+        subset = Tubular.applyFreeTextSearch(request, subset, response);
 
-        subset = applySorting(request, subset);
+        subset = Tubular.applyFiltering(request, subset, response);
+
+        subset = Tubular.applySorting(request, subset);
+
+
     }
 
     static applySorting(request, subset) {
-        let sortedColumns = request.Columns.filter(column => column.SortOrder > 0);
+        let sortedColumns = _.filter(request.Columns, column => column.SortOrder > 0);
 
         if (sortedColumns.length > 0) {
-            sortedColumns = sortedColumns.sort(function (a, b) {
-                return parseFloat(a.price) - parseFloat(b.price);
-            });
+            sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
 
-            sortedColumns.forEach(column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? "asc" : "desc")))
+            _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? "asc" : "desc")));
         } else {
             // Default sorting
             subset.orderBy(request.Columns[0].Name, 'asc');
@@ -80,7 +85,7 @@ class Tubular {
 
                 case CompareOperators.auto:
 
-                    let searchableColumns = request.Columns.filter((column) => column.Searchable);
+                    let searchableColumns = _.filter(request.Columns, column => column.Searchable);
 
                     if (searchableColumns.length > 0) {
                         subset = subset.where(function () {
@@ -149,15 +154,6 @@ class Tubular {
                     break;
             }
         });
-
-        return subset;
-    }
-
-    static filterResponse(request, subset, response) {
-
-        subset = Tubular.applyFreeTextSearch(request, subset, response);
-
-        subset = Tubular.applyFiltering(request, subset, response);
 
         return subset;
     }

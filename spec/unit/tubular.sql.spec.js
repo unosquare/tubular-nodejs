@@ -6,7 +6,9 @@ describe("Tubular", function () {
     it(" must define its interface", function () {
         expect(Tubular).toBeDefined();
         expect(Tubular.createGridResponse).toBeDefined();
-        expect(Tubular.filterResponse).toBeDefined();
+        expect(Tubular.applyFiltering).toBeDefined();
+        expect(Tubular.applyFreeTextSearch).toBeDefined();
+        expect(Tubular.applySorting).toBeDefined();
     });
 
     it(" must failed when no columns", function () {
@@ -140,8 +142,10 @@ describe("Tubular", function () {
             }
         };
 
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+
         let expected = "select [Title], [Author], [Year] from [Books] where ([Title] LIKE '%Hola%' or [Author] LIKE '%Hola%') and [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
-        let result = Tubular.filterResponse(request, queryBuilder).toString();
+        let result = Tubular.applyFiltering(request, subset).toString();
 
         expect(result).toBe(expected);
     });
@@ -165,9 +169,12 @@ describe("Tubular", function () {
             ]
         };
 
-        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        subset = Tubular.applySorting(request, subset);
+
         let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Title] asc";
-        let result = Tubular.applySorting(request, filteredResponse).toString();
+        let result = subset.toString();
 
         expect(result).toBe(expected);
     });
@@ -191,9 +198,12 @@ describe("Tubular", function () {
             ]
         };
 
-        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        subset = Tubular.applySorting(request, subset);
+
         let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc";
-        let result = Tubular.applySorting(request, filteredResponse).toString();
+        let result = subset.toString();
 
         expect(result).toBe(expected);
     });
@@ -212,14 +222,17 @@ describe("Tubular", function () {
                         HasFilter: false
                     }
                 },
-                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 2, SortDirection: 'Ascending', Searchable: true },
-                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 1, SortDirection: 'Descending', Searchable: true }
+                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true },
+                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true }
             ]
         };
 
-        let filteredResponse = Tubular.filterResponse(request, queryBuilder);
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        subset = Tubular.applySorting(request, subset);
+
         let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc, [Year] desc";
-        let result = Tubular.applySorting(request, filteredResponse).toString();
+        let result = subset.toString();
 
         expect(result).toBe(expected);
     });
