@@ -1,0 +1,4 @@
+instrumentation:
+    root: .
+    default-excludes: true
+    excludes: ['spec/**/*']
