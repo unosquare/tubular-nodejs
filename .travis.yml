@@ -2,8 +2,14 @@ language: node_js
 sudo: false
 node_js:
 - node
+services:
+- mysql
 install:
 - npm install
+before_script:
+- curl -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
+- mysql -u root < sakila-db/sakila-schema.sql
+- mysql -u root < sakila-db/sakila-data.sql
 script:
 - npm test
 - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js

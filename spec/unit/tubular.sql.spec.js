@@ -1,5 +1,13 @@
 var Tubular = require('../../src/tubular');
-var knex = require('knex')({ client: 'mssql' });
+var knex = require('knex')({
+            client: 'mysql',
+            connection: {
+                host : '127.0.0.1',
+                user : 'travis',
+                password : '',
+                database : 'sakila'
+            }
+        });
 
 describe("Tubular", function () {
 
@@ -9,6 +17,10 @@ describe("Tubular", function () {
         expect(Tubular.applyFiltering).toBeDefined();
         expect(Tubular.applyFreeTextSearch).toBeDefined();
         expect(Tubular.applySorting).toBeDefined();
+    });
+
+    it(" must connect to Mysql", done => {
+        knex.raw('select 1+1 as result').then(() => { done(); });
     });
 
     it(" must failed when no columns", function () {
@@ -38,7 +50,7 @@ describe("Tubular", function () {
             }
         };
 
-        let expected = "select [Title], [Author], [Year] from [Books] where ([Title] LIKE '%Hola%' or [Author] LIKE '%Hola%')";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where (`Title` LIKE '%Hola%' or `Author` LIKE '%Hola%')";
         let result = Tubular.applyFreeTextSearch(request, queryBuilder).toString();
         expect(result).toBe(expected);
     });
@@ -62,7 +74,7 @@ describe("Tubular", function () {
             ]
         };
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%'";
         let result = Tubular.applyFiltering(request, queryBuilder).toString();
 
         expect(result).toBe(expected);
@@ -102,7 +114,7 @@ describe("Tubular", function () {
             }
         };
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%' and `Author` LIKE '%Other%'";
         let result = Tubular.applyFiltering(request, queryBuilder).toString();
 
         expect(result).toBe(expected);
@@ -144,7 +156,7 @@ describe("Tubular", function () {
 
         let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where ([Title] LIKE '%Hola%' or [Author] LIKE '%Hola%') and [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where (`Title` LIKE '%Hola%' or `Author` LIKE '%Hola%') and `Title` LIKE '%Hola%' and `Author` LIKE '%Other%'";
         let result = Tubular.applyFiltering(request, subset).toString();
 
         expect(result).toBe(expected);
@@ -173,7 +185,7 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Title] asc";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%' order by `Title` asc";
         let result = subset.toString();
 
         expect(result).toBe(expected);
@@ -202,7 +214,7 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%' order by `Author` asc";
         let result = subset.toString();
 
         expect(result).toBe(expected);
@@ -231,7 +243,7 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc, [Year] desc";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%' order by `Author` asc, `Year` desc";
         let result = subset.toString();
 
         expect(result).toBe(expected);
@@ -260,11 +272,11 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         // subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%'";
         let result = subset.toString();
         expect(result).toBe(expected);
 
-        let expectedAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
+        let expectedAggregate = "select count(`Author`) from `Books` where `Title` LIKE '%Hola%'";
         let resultAggregate = Tubular.getAggregatePayloads(request, subset);
 
         expect(resultAggregate.Author).toBeDefined();
@@ -294,12 +306,12 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         // subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%'";
         let result = subset.toString();
         expect(result).toBe(expected);
 
-        let authorAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
-        let yearAggregate = "select sum([Year]) from [Books] where [Title] LIKE '%Hola%'";
+        let authorAggregate = "select count(`Author`) from `Books` where `Title` LIKE '%Hola%'";
+        let yearAggregate = "select sum(`Year`) from `Books` where `Title` LIKE '%Hola%'";
         let resultAggregate = Tubular.getAggregatePayloads(request, subset);
 
         expect(resultAggregate.Author).toBeDefined();
@@ -337,16 +349,16 @@ describe("Tubular", function () {
         subset = Tubular.applyFiltering(request, subset);
         // subset = Tubular.applySorting(request, subset);
 
-        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let expected = "select `Title`, `Author`, `Year` from `Books` where `Title` LIKE '%Hola%'";
         let result = subset.toString();
         expect(result).toBe(expected);
 
-        let avgAggregate = "select avg([AverageColumn]) from [Books] where [Title] LIKE '%Hola%'";
-        let countAggregate = "select count([CountColumn]) from [Books] where [Title] LIKE '%Hola%'";
-        let sumAggregate = "select sum([SumColumn]) from [Books] where [Title] LIKE '%Hola%'";
-        let maxAggregate = "select max([MaxColumn]) from [Books] where [Title] LIKE '%Hola%'";
-        let minAggregate = "select min([MinColumn]) from [Books] where [Title] LIKE '%Hola%'";
-        let distinctCountAggregate = "select count(distinct [DistinctCountColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let avgAggregate = "select avg(`AverageColumn`) from `Books` where `Title` LIKE '%Hola%'";
+        let countAggregate = "select count(`CountColumn`) from `Books` where `Title` LIKE '%Hola%'";
+        let sumAggregate = "select sum(`SumColumn`) from `Books` where `Title` LIKE '%Hola%'";
+        let maxAggregate = "select max(`MaxColumn`) from `Books` where `Title` LIKE '%Hola%'";
+        let minAggregate = "select min(`MinColumn`) from `Books` where `Title` LIKE '%Hola%'";
+        let distinctCountAggregate = "select count(distinct `DistinctCountColumn`) from `Books` where `Title` LIKE '%Hola%'";
         let resultAggregate = Tubular.getAggregatePayloads(request, subset);
 
         expect(resultAggregate.AverageColumn).toBeDefined();
