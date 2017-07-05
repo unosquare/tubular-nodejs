@@ -32,7 +32,7 @@ const AggregationFunction = {
 }
 
 function getCompareOperator(operator) {
-    switch (op) {
+    switch (operator) {
         case CompareOperators.Equals:
             return "=";
         case CompareOperators.NotEquals:
@@ -51,15 +51,16 @@ function getCompareOperator(operator) {
 }
 
 class Tubular {
-    static createGridResponse(request, knexQueryBuilder) {
+    static createGridResponse(request, subset) {
         if (request.Columns == null || request.Columns.length == 0)
             throw 'No Columns specified on the request';
 
+        let originalCount = subset.clone().count(request.Columns[0].Name);
 
         let response = {
             Counter: request.Counter,
-            TotalRecordCount: dataSource.count('TODO: id should be defined here'),
-            FilteredRecordCount: dataSource.count('TODO: id should be defined here'),
+            TotalRecordCount: originalCount,
+            FilteredRecordCount: originalCount,
         };
 
 
@@ -68,11 +69,55 @@ class Tubular {
 
         subset = Tubular.applyFiltering(request, subset, response);
 
+        let subsetForAggregates = subset.clone();
+
         subset = Tubular.applySorting(request, subset);
 
-        response.AggregationPayload = Tubular.getAggregatePayloads(request, subset);
+        response.AggregationPayload = Tubular.getAggregatePayloads(request, subsetForAggregates);
+
+        let pageSize = +request.Take;
+        let subsetCount = subsetForAggregates.count(request.Columns[0].Name);
+
+        // Take with value -1 represents entire set
+        if (request.Take == -1) {
+            response.TotalPages = 1;
+            response.CurrentPage = 1;
+            pageSize = subsetCount; // Calculate this properly
+            subset = subset.offset(request.Skip).limit(pageSize);
+        }
+        else {
+            var filteredCount = subsetCount;
+            var totalPages = response.TotalPages = filteredCount / pageSize;
+
+            if (totalPages > 0) {
+                response.CurrentPage = request.Skip / pageSize + 1;
+
+                if (request.Skip > 0) subset = subset.offset(request.Skip);
+            }
+
+            subset = subset.limit(pageSize);
+        }
+
+        response.Payload = Tubular.createGridPayload(request, subset);
+
 
         return response;
+    }
+
+    static createGridPayload(request, subset) {
+
+        return subset.then(function (rows) {
+            let payload = [];
+            _.forEach(rows, row => {
+                let item = [];
+
+                _.forEach(request.Columns, column => {
+                    item.push(row[column.Name]);
+                })
+
+                payload.push(item);
+            })
+        });
     }
 
     static applySorting(request, subset) {
@@ -84,7 +129,7 @@ class Tubular {
             _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? "asc" : "desc")));
         } else {
             // Default sorting
-            subset.orderBy(request.Columns[0].Name, 'asc');
+            subset = subset.orderBy(request.Columns[0].Name, 'asc');
         }
 
         return subset;
