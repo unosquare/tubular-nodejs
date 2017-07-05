@@ -8,7 +8,7 @@ install:
 - npm install
 before_script:
 - curl -L -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
-- sed -i 's/ENGINE=InnoDB/ENGINE=MyISAM/g' sakila-schema.sql
+- sed -i 's/ENGINE=InnoDB/ENGINE=MyISAM/g' sakila-db/sakila-schema.sql
 - mysql -u root < sakila-db/sakila-schema.sql
 - mysql -u root < sakila-db/sakila-data.sql
 script:
