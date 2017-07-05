@@ -286,7 +286,7 @@ describe("Tubular", function () {
                     }
                 },
                 { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
-                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true, Aggregate: "Sum"}
+                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true, Aggregate: "Sum" }
             ]
         };
 
@@ -308,4 +308,64 @@ describe("Tubular", function () {
         expect(resultAggregate.Year).toBeDefined();
         expect(resultAggregate.Year.toString()).toBe(yearAggregate);
     });
+
+    it(" use all possible aggregates", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'AverageColumn', Label: 'AverageColumn', Sortable: true, SortDirection: 'Descending', Searchable: true, Aggregate: "Average" },
+                { Name: 'CountColumn', Label: 'CountColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
+                { Name: 'SumColumn', Label: 'SumColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Sum" },
+                { Name: 'MaxColumn', Label: 'MaxColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Max" },
+                { Name: 'MinColumn', Label: 'MinColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Min" },
+                { Name: 'DistinctCountColumn', Label: 'DistinctCountColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "DistinctCount" }
+
+            ]
+        };
+
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        // subset = Tubular.applySorting(request, subset);
+
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let result = subset.toString();
+        expect(result).toBe(expected);
+
+        let avgAggregate = "select avg([AverageColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let countAggregate = "select count([CountColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let sumAggregate = "select sum([SumColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let maxAggregate = "select max([MaxColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let minAggregate = "select min([MinColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let distinctCountAggregate = "select count(distinct [DistinctCountColumn]) from [Books] where [Title] LIKE '%Hola%'";
+        let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+
+        expect(resultAggregate.AverageColumn).toBeDefined();
+        expect(resultAggregate.AverageColumn.toString()).toBe(avgAggregate);
+
+        expect(resultAggregate.CountColumn).toBeDefined();
+        expect(resultAggregate.CountColumn.toString()).toBe(countAggregate);
+
+        expect(resultAggregate.SumColumn).toBeDefined();
+        expect(resultAggregate.SumColumn.toString()).toBe(sumAggregate);
+
+        expect(resultAggregate.MaxColumn).toBeDefined();
+        expect(resultAggregate.MaxColumn.toString()).toBe(maxAggregate);
+
+        expect(resultAggregate.MinColumn).toBeDefined();
+        expect(resultAggregate.MinColumn.toString()).toBe(minAggregate);
+
+        expect(resultAggregate.DistinctCountColumn).toBeDefined();
+        expect(resultAggregate.DistinctCountColumn.toString()).toBe(distinctCountAggregate);
+    });
+
 });

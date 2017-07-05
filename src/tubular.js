@@ -114,7 +114,7 @@ class Tubular {
                         value = copyOfSubset.avg(column.Name);
                         break;
                     case AggregationFunction.max:
-                        value = subcopyOfSubsetset.max(column.Name);
+                        value = copyOfSubset.max(column.Name);
                         break;
                     case AggregationFunction.min:
                         value = copyOfSubset.min(column.Name);
