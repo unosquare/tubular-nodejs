@@ -4,7 +4,7 @@
   "description": "Tubular Node.js Backend",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover node_modules/jasmine/bin/jasmine.js"
+    "test": "eslint src/** && istanbul cover node_modules/jasmine/bin/jasmine.js"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,9 @@
   "devDependencies": {
     "coveralls": "^2.13.1",
     "eslint": "^4.1.1",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "istanbul": "^0.4.5",
     "jasmine": "^2.6.0"
   }
