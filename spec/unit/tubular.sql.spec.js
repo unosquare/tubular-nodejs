@@ -236,4 +236,76 @@ describe("Tubular", function () {
 
         expect(result).toBe(expected);
     });
+
+    it(" use aggregate on one column", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
+                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true }
+            ]
+        };
+
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        // subset = Tubular.applySorting(request, subset);
+
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let result = subset.toString();
+        expect(result).toBe(expected);
+
+        let expectedAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
+        let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+
+        expect(resultAggregate.Author).toBeDefined();
+        expect(resultAggregate.Author.toString()).toBe(expectedAggregate);
+    });
+
+    it(" use aggregate on two columns", function () {
+        let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+
+        let request = {
+            Columns: [
+                {
+                    Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'Hola',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
+                { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true, Aggregate: "Sum"}
+            ]
+        };
+
+        let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+        subset = Tubular.applyFiltering(request, subset);
+        // subset = Tubular.applySorting(request, subset);
+
+        let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
+        let result = subset.toString();
+        expect(result).toBe(expected);
+
+        let authorAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
+        let yearAggregate = "select sum([Year]) from [Books] where [Title] LIKE '%Hola%'";
+        let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+
+        expect(resultAggregate.Author).toBeDefined();
+        expect(resultAggregate.Author.toString()).toBe(authorAggregate);
+
+        expect(resultAggregate.Year).toBeDefined();
+        expect(resultAggregate.Year.toString()).toBe(yearAggregate);
+    });
 });

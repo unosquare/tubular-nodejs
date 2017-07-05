@@ -21,6 +21,16 @@ const CompareOperators = {
     notEndsWith: 'NotEndsWith'
 }
 
+const AggregationFunction = {
+    none: 'None',
+    sum: 'Sum',
+    average: 'Average',
+    count: 'Count',
+    distinctCount: 'DistinctCount',
+    max: 'Max',
+    min: 'Min'
+}
+
 function getCompareOperator(operator) {
     switch (op) {
         case CompareOperators.Equals:
@@ -52,13 +62,17 @@ class Tubular {
             FilteredRecordCount: dataSource.count('TODO: id should be defined here'),
         };
 
+
+        // WIP section
         subset = Tubular.applyFreeTextSearch(request, subset, response);
 
         subset = Tubular.applyFiltering(request, subset, response);
 
         subset = Tubular.applySorting(request, subset);
 
+        response.AggregationPayload = Tubular.getAggregatePayloads(request, subset);
 
+        return response;
     }
 
     static applySorting(request, subset) {
@@ -74,6 +88,53 @@ class Tubular {
         }
 
         return subset;
+    }
+
+    static getAggregatePayloads(request, subset) {
+        let payload = {};
+        let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
+
+
+        if (aggregateColumns.length > 0) {
+
+            _.forEach(aggregateColumns, column => {
+                let value;
+
+                // Do not disrupt the original query chain
+                let copyOfSubset = subset.clone();
+
+                // in order to work with aggregates
+                copyOfSubset.clearSelect();
+
+                switch (column.Aggregate) {
+                    case AggregationFunction.sum:
+                        value = copyOfSubset.sum(column.Name);
+                        break;
+                    case AggregationFunction.average:
+                        value = copyOfSubset.avg(column.Name);
+                        break;
+                    case AggregationFunction.max:
+                        value = subcopyOfSubsetset.max(column.Name);
+                        break;
+                    case AggregationFunction.min:
+                        value = copyOfSubset.min(column.Name);
+                        break;
+                    case AggregationFunction.count:
+                        value = copyOfSubset.count(column.Name);
+                        break;
+                    case AggregationFunction.distinctCount:
+                        value = copyOfSubset.countDistinct(column.Name);
+                        break;
+                    default:
+                        value = 0;
+                        break;
+                }
+
+                payload[column.Name] = value;
+            });
+        }
+
+        return payload;
     }
 
     static applyFreeTextSearch(request, subset, response) {
