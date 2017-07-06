@@ -83,7 +83,7 @@ async function createGridResponse(request, subset) {
 
     subset = applySorting(request, subset);
 
-    response.AggregationPayload = getAggregatePayloads(request, subsetForAggregates);
+    response.AggregationPayload = await getAggregatePayloads(request, subsetForAggregates);
 
     let pageSize = +request.Take;
 
@@ -121,7 +121,7 @@ async function createGridResponse(request, subset) {
 }
 
 async function createGridPayload(request, subset) {
-    
+
     return subset.then(function (rows) {
         let payload = [];
         _.forEach(rows, row => {
@@ -153,15 +153,21 @@ function applySorting(request, subset) {
     return subset;
 }
 
-function getAggregatePayloads(request, subset) {
+async function getAggregateResult(subset) {
+    return subset.then(result => {
+        return result[0].tbResult;
+    });
+}
+
+async function getAggregatePayloads(request, subset) {
     let payload = {};
     let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
 
 
     if (aggregateColumns.length > 0) {
 
-        _.forEach(aggregateColumns, column => {
-            let value;
+        _.forEach(aggregateColumns, async (column) => {
+            let properAggregate = true;
 
             // Do not disrupt the original query chain
             let copyOfSubset = subset.clone();
@@ -171,29 +177,33 @@ function getAggregatePayloads(request, subset) {
 
             switch (column.Aggregate) {
                 case AggregationFunction.sum:
-                    value = copyOfSubset.sum(column.Name);
+                    copyOfSubset = copyOfSubset.sum(`${column.Name} as tbResult`);
                     break;
                 case AggregationFunction.average:
-                    value = copyOfSubset.avg(column.Name);
+                    copyOfSubset = copyOfSubset.avg(`${column.Name} as tbResult`);
                     break;
                 case AggregationFunction.max:
-                    value = copyOfSubset.max(column.Name);
+                    copyOfSubset = copyOfSubset.max(`${column.Name} as tbResult`);
                     break;
                 case AggregationFunction.min:
-                    value = copyOfSubset.min(column.Name);
+                    copyOfSubset = copyOfSubset.min(`${column.Name} as tbResult`);
                     break;
                 case AggregationFunction.count:
-                    value = copyOfSubset.count(column.Name);
+                    copyOfSubset = copyOfSubset.count(`${column.Name} as tbResult`);
                     break;
                 case AggregationFunction.distinctCount:
-                    value = copyOfSubset.countDistinct(column.Name);
+                    copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
                     break;
                 default:
-                    value = 0;
+                    properAggregate = false;
                     break;
             }
 
-            payload[column.Name] = value;
+            if (properAggregate) {
+                payload[column.Name] = await copyOfSubset.then(result => {
+                    return result[0].tbResult;
+                });
+            }
         });
     }
 
