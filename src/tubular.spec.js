@@ -74,30 +74,51 @@ describe("tubular", function () {
             });
     });
 
-    // it(" filters by one column", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+    it(" filters by one column", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 1,
+            totalRecordCount = 599;
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Author', Label: 'Author', Sortable: true, Searchable: true },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
-    //         ]
-    //     };
+        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
-    //     let result = tubular.applyFiltering(request, queryBuilder).toString();
 
-    //     expect(result).toBe(expected);
-    // });
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'JOY',
+                        Argument: [],
+                        Operator: 'Contains',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+            ],
+            Search: {
+                Name: '',
+                Text: 'GEO',
+                Argument: [],
+                Operator: 'Auto',
+                HasFilter: false
+            }
+        };
+
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(599);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                done();
+            });
+    });
 
     // it(" filters by two column", function () {
     //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
