@@ -13,6 +13,5 @@ before_script:
 - mysql -u root < sakila-db/sakila-data.sql
 script:
 - npm test
-- cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
 after_success: 
 - npm run coverage
