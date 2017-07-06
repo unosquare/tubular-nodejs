@@ -14,3 +14,5 @@ before_script:
 script:
 - npm test
 - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+after_success: 
+- npm run coverage
