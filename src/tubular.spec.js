@@ -66,8 +66,8 @@ describe("tubular", function () {
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
                 expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(599);
-                expect(response.FilteredRecordCount).toBe(31);
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
                 expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
                 expect(response.Payload.length).toBeDefined(take);
                 done();
@@ -112,7 +112,7 @@ describe("tubular", function () {
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
                 expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(599);
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
                 expect(response.FilteredRecordCount).toBe(filteredCount);
                 expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
                 expect(response.Payload.length).toBeDefined(take);
@@ -120,174 +120,174 @@ describe("tubular", function () {
             });
     });
 
-    // it(" filters by two column", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+    it(" combines search and filter", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 1,
+            totalRecordCount = 599;
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             {
-    //                 Name: 'Author', Label: 'Author', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Other',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
-    //         ],
-    //         Search: {
-    //             Name: '',
-    //             Text: 'Hola',
-    //             Argument: ['Hola'],
-    //             Operator: 'Auto',
-    //             HasFilter: false
-    //         }
-    //     };
+        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
-    //     let result = tubular.applyFiltering(request, queryBuilder).toString();
 
-    //     expect(result).toBe(expected);
-    // });
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'ANDREW',
+                        Argument: [],
+                        Operator: 'Equals',
+                        HasFilter: false
+                    }
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 'PURDY',
+                        Argument: [],
+                        Operator: 'Equals',
+                        HasFilter: false
+                    }
+                },
+                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+            ],
+            Search: {
+                Name: '',
+                Text: 'AND',
+                Argument: [],
+                Operator: 'Auto',
+                HasFilter: false
+            }
+        };
 
-    // it(" combines search and filter", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                done();
+            });
+    });
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             {
-    //                 Name: 'Author', Label: 'Author', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Other',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, Searchable: false }
-    //         ],
-    //         Search: {
-    //             Name: '',
-    //             Text: 'Hola',
-    //             Argument: ['Hola'],
-    //             Operator: 'Auto',
-    //             HasFilter: false
-    //         }
-    //     };
+    it(" sorts by default column", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 599,
+            totalRecordCount = 599;
 
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where ([Title] LIKE '%Hola%' or [Author] LIKE '%Hola%') and [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
-    //     let result = tubular.applyFiltering(request, subset).toString();
 
-    //     expect(result).toBe(expected);
-    // });
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                }
+            ]
+        };
 
-    // it(" sorts by default column", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                expect(response.Payload[0][0]).toBe('AARON');
+                done();
+            });
+    });
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Author', Label: 'Author', Sortable: true, Searchable: true },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
-    //         ]
-    //     };
+    it(" sorts by specific column", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 599,
+            totalRecordCount = 599;
 
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = tubular.applyFiltering(request, subset);
-    //     subset = tubular.applySorting(request, subset);
+        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Title] asc";
-    //     let result = subset.toString();
 
-    //     expect(result).toBe(expected);
-    // });
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                },
+                {
+                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                }
+            ]
+        };
 
-    // it(" sorts by specified column", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                expect(response.Payload[0][1]).toBe('ABNEY');
+                done();
+            });
+    });
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 2, SortDirection: 'Ascending', Searchable: true },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, Searchable: true }
-    //         ]
-    //     };
+    it(" sorts by TWO columns", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 599,
+            totalRecordCount = 599;
 
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = tubular.applyFiltering(request, subset);
-    //     subset = tubular.applySorting(request, subset);
+        let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc";
-    //     let result = subset.toString();
 
-    //     expect(result).toBe(expected);
-    // });
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                },
+                {
+                    Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, SortDirection: 'Ascending'
+                }
+            ]
+        };
 
-    // it(" sorts by two columns", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
-
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true }
-    //         ]
-    //     };
-
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = tubular.applyFiltering(request, subset);
-    //     subset = tubular.applySorting(request, subset);
-
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc, [Year] desc";
-    //     let result = subset.toString();
-
-    //     expect(result).toBe(expected);
-    // });
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                expect(response.Payload[0][2]).toBe(0);
+                expect(response.Payload[0][1]).toBe('ARCE');
+                done();
+            });
+    });
 
     // it(" use aggregate on one column", function () {
     //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');

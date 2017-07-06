@@ -121,7 +121,7 @@ async function createGridResponse(request, subset) {
 }
 
 async function createGridPayload(request, subset) {
-
+    
     return subset.then(function (rows) {
         let payload = [];
         _.forEach(rows, row => {
