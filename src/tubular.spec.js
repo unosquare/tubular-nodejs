@@ -1,4 +1,4 @@
-var Tubular = require('../../src/tubular');
+var tubular = require('./tubular');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -11,29 +11,43 @@ var knex = require('knex')({
 });
 
 
-describe("Tubular", function () {
+describe("tubular", function () {
 
     it(" must define its interface", function () {
-        expect(Tubular).toBeDefined();
-        expect(Tubular.createGridResponse).toBeDefined();
-        expect(Tubular.applyFiltering).toBeDefined();
-        expect(Tubular.applyFreeTextSearch).toBeDefined();
-        expect(Tubular.applySorting).toBeDefined();
+        expect(tubular).toBeDefined();
+        expect(tubular.createGridResponse).toBeDefined();
     });
 
-    it(" must failed when no columns", function () {
+    it(" must failed when no columns", done => {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
-
-        expect(function () { Tubular.createGridResponse({}, queryBuilder) }).toThrow('No Columns specified on the request');
-        expect(function () { Tubular.createGridResponse({ Columns: [] }, queryBuilder) }).toThrow('No Columns specified on the request');
+        tubular.createGridResponse({}, queryBuilder)
+            .catch(error => {
+                expect(error).toBe('No Columns specified on the request')
+                done();
+            });
     });
 
-    it(" use free text search", function () {
+    it(" must failed when no request", done => {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-        expect(function () { Tubular.createGridResponse({}, queryBuilder) }).toThrow('No Columns specified on the request');
+        tubular.createGridResponse(null, queryBuilder)
+            .catch(error => {
+                expect(error).toBe('"request" cannot be null')
+                done();
+            });
+    });
+
+    it(" use free text search", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 31,
+            totalRecordCount = 599;
+
+        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
         let request = {
+            Skip: skip,
+            Take: take,
             Counter: 1,
             Columns: [
                 { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
@@ -49,15 +63,15 @@ describe("Tubular", function () {
             }
         };
 
-        let expected = "select `first_name`, `last_name`, `address_id` from `customer` where (`first_name` LIKE '%And%' or `last_name` LIKE '%And%')";
-        let result = Tubular.createGridResponse(request, queryBuilder);
-
-        expect(result.Counter).toBeDefined();
-        expect(result.TotalRecordCount).toBeDefined();
-        expect(result.FilteredRecordCount).toBeDefined();
-        expect(result.AggregationPayload).toBeDefined();
-        expect(result.TotalPages).toBeDefined();
-        expect(result.Payload).toBeDefined();
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(599);
+                expect(response.FilteredRecordCount).toBe(31);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBeDefined(take);
+                done();
+            });
     });
 
     // it(" filters by one column", function () {
@@ -80,7 +94,7 @@ describe("Tubular", function () {
     //     };
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
-    //     let result = Tubular.applyFiltering(request, queryBuilder).toString();
+    //     let result = tubular.applyFiltering(request, queryBuilder).toString();
 
     //     expect(result).toBe(expected);
     // });
@@ -120,7 +134,7 @@ describe("Tubular", function () {
     //     };
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
-    //     let result = Tubular.applyFiltering(request, queryBuilder).toString();
+    //     let result = tubular.applyFiltering(request, queryBuilder).toString();
 
     //     expect(result).toBe(expected);
     // });
@@ -159,10 +173,10 @@ describe("Tubular", function () {
     //         }
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where ([Title] LIKE '%Hola%' or [Author] LIKE '%Hola%') and [Title] LIKE '%Hola%' and [Author] LIKE '%Other%'";
-    //     let result = Tubular.applyFiltering(request, subset).toString();
+    //     let result = tubular.applyFiltering(request, subset).toString();
 
     //     expect(result).toBe(expected);
     // });
@@ -186,9 +200,9 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
-    //     subset = Tubular.applySorting(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
+    //     subset = tubular.applySorting(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Title] asc";
     //     let result = subset.toString();
@@ -215,9 +229,9 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
-    //     subset = Tubular.applySorting(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
+    //     subset = tubular.applySorting(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc";
     //     let result = subset.toString();
@@ -244,9 +258,9 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
-    //     subset = Tubular.applySorting(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
+    //     subset = tubular.applySorting(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%' order by [Author] asc, [Year] desc";
     //     let result = subset.toString();
@@ -273,16 +287,16 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
-    //     // subset = Tubular.applySorting(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
+    //     // subset = tubular.applySorting(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
     //     let result = subset.toString();
     //     expect(result).toBe(expected);
 
     //     let expectedAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+    //     let resultAggregate = tubular.getAggregatePayloads(request, subset);
 
     //     expect(resultAggregate.Author).toBeDefined();
     //     expect(resultAggregate.Author.toString()).toBe(expectedAggregate);
@@ -307,9 +321,9 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
-    //     // subset = Tubular.applySorting(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
+    //     // subset = tubular.applySorting(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
     //     let result = subset.toString();
@@ -317,7 +331,7 @@ describe("Tubular", function () {
 
     //     let authorAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
     //     let yearAggregate = "select sum([Year]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+    //     let resultAggregate = tubular.getAggregatePayloads(request, subset);
 
     //     expect(resultAggregate.Author).toBeDefined();
     //     expect(resultAggregate.Author.toString()).toBe(authorAggregate);
@@ -350,8 +364,8 @@ describe("Tubular", function () {
     //         ]
     //     };
 
-    //     let subset = Tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = Tubular.applyFiltering(request, subset);
+    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
+    //     subset = tubular.applyFiltering(request, subset);
 
     //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
     //     let result = subset.toString();
@@ -363,7 +377,7 @@ describe("Tubular", function () {
     //     let maxAggregate = "select max([MaxColumn]) from [Books] where [Title] LIKE '%Hola%'";
     //     let minAggregate = "select min([MinColumn]) from [Books] where [Title] LIKE '%Hola%'";
     //     let distinctCountAggregate = "select count(distinct [DistinctCountColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let resultAggregate = Tubular.getAggregatePayloads(request, subset);
+    //     let resultAggregate = tubular.getAggregatePayloads(request, subset);
 
     //     expect(resultAggregate.AverageColumn).toBeDefined();
     //     expect(resultAggregate.AverageColumn.toString()).toBe(avgAggregate);
