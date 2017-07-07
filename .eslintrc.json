@@ -10,5 +10,11 @@
     "plugins": [
         "standard",
         "promise"
-    ]
+    ],
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "rules":{
+        "quotes": ["error", "single"]
+    }
 }
