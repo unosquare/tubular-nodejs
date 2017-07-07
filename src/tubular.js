@@ -1,5 +1,5 @@
-module.exports = function Tubular(connectorName){
-    var connectorInstance = require(`./connectors/${connectorName}`);
+module.exports = function Tubular(connectorName, options){
+    var connectorInstance = require(`./connectors/${connectorName}`)(options);
 
     return {
         connector: connectorInstance,

@@ -39,13 +39,13 @@ function createGridResponse(request, subset) {
     let subsetForAggregates = subset.clone();
 
     promises.push(getAggregatePayloads(request, subsetForAggregates)
-        .then(values => ({ AggregationPayload: _.reduce(values, (result, value) => _.merge(result, value), {}) })));
+        .then(values => ({ AggregationPayload: _.reduce(values, _.merge, {}) })));
 
     let response = { Counter: request.Counter, TotalPages: 1, CurrentPage: 1 };
     
     return Promise.all(promises)
         .then(values => {
-            response = _.reduce(values, (result, value) => _.merge(result, value), response);
+            response = _.reduce(values, _.merge, response);
 
             // Take with value -1 represents entire set
             if (request.Take > -1) {
@@ -193,4 +193,8 @@ function applyFiltering(request, subset) {
     return subset;
 }
 
-module.exports = { createGridResponse: createGridResponse };
+module.exports = function(options){ 
+    return {
+        createGridResponse: createGridResponse 
+    };
+};
