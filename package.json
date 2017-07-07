@@ -41,5 +41,8 @@
       "**/*.spec.js",
       "build"
     ]
-  }
+  },
+  "eslintIgnore": [
+    "*.spec.js"
+  ]
 }

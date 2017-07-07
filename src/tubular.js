@@ -1,7 +1,6 @@
 // Load the full build.
 var _ = require('lodash');
 
-
 const CompareOperators = {
     none: 'None',
     auto: 'Auto',
@@ -33,84 +32,80 @@ const AggregationFunction = {
 
 function getCompareOperator(operator) {
     switch (operator) {
-        case CompareOperators.Equals:
+        case CompareOperators.equals:
             return "=";
-        case CompareOperators.NotEquals:
+        case CompareOperators.notEquals:
             return "!=";
-        case CompareOperators.Gte:
+        case CompareOperators.gte:
             return ">=";
-        case CompareOperators.Gt:
+        case CompareOperators.gt:
             return ">";
-        case CompareOperators.Lte:
+        case CompareOperators.lte:
             return "<=";
-        case CompareOperators.Lt:
+        case CompareOperators.lt:
             return "<";
         default:
             return null;
     }
 }
 
-async function createGridResponse(request, subset) {
+function createGridResponse(request, subset) {
     if (!request)
         throw '"request" cannot be null';
 
+    if (!subset)
+        throw '"subset" cannot be null';
+
     if (request.Columns == null || request.Columns.length == 0)
         throw 'No Columns specified on the request';
-
-    const originalCount = await subset.clone().clearSelect()
+    
+    let promises = [
+        subset.clone().clearSelect()
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => result[0].tbResult);
+        .then(result => ({TotalRecordCount : result[0].tbResult }))
+    ];
+    
+    subset = applyFreeTextSearch(request, subset);
+    subset = applyFiltering(request, subset);
+    subset = applySorting(request, subset);
 
-    let response = {
-        Counter: request.Counter,
-        TotalRecordCount: originalCount,
-        FilteredRecordCount: originalCount
-    };
-
-    subset = applyFreeTextSearch(request, subset, response);
-    subset = applyFiltering(request, subset, response);
-
-    response.FilteredRecordCount = await subset.clone().clearSelect()
+    promises.push(subset.clone().clearSelect()
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => result[0].tbResult);
+        .then(result => ({ FilteredRecordCount : result[0].tbResult } )));
 
     let subsetForAggregates = subset.clone();
 
-    subset = applySorting(request, subset);
+    promises.push(getAggregatePayloads(request, subsetForAggregates)
+        .then(values => ({ AggregationPayload: _.reduce(values, (result, value) => _.merge(result, value), {}) })));
 
-    response.AggregationPayload = await getAggregatePayloads(request, subsetForAggregates)
-        .then(values => _.reduce(_.pickBy(values, _.identity), (result, value) => _.merge(result, value), {}));
+    let response = { Counter: request.Counter, TotalPages: 1, CurrentPage: 1 };
+    
+    return Promise.all(promises)
+        .then(values => {
+            response = _.reduce(values, (result, value) => _.merge(result, value), response);
 
-    let pageSize = +request.Take;
+            // Take with value -1 represents entire set
+            if (request.Take > -1) {
+                response.TotalPages = Math.ceil(response.FilteredRecordCount / request.Take);
 
-    const subsetCount = await subsetForAggregates
-        .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => result[0].tbResult);
+                if (response.TotalPages > 0) {
+                    response.CurrentPage = request.Skip / request.Take + 1;
 
-    // Take with value -1 represents entire set
-    if (request.Take == -1) {
-        response.TotalPages = 1;
-        response.CurrentPage = 1;
-        pageSize = subsetCount; // Calculate this properly
-        subset = subset.offset(request.Skip).limit(pageSize);
-    }
-    else {
-        var filteredCount = subsetCount;
-        var totalPages = response.TotalPages = Math.ceil(filteredCount / pageSize);
+                    if (request.Skip > 0) {
+                        subset = subset.offset(request.Skip);
+                    }
+                }
 
-        if (totalPages > 0) {
-            response.CurrentPage = request.Skip / pageSize + 1;
+                subset = subset.limit(request.Take);
+            }
 
-            if (request.Skip > 0)
-                subset = subset.offset(request.Skip);
-        }
+            return subset;
+        })
+        .then(rows => {
+            response.Payload = rows.map(row => request.Columns.map(c => row[c.Name]));
 
-        subset = subset.limit(pageSize);
-    }
-
-    response.Payload = await subset.then(rows => rows.map(row => request.Columns.map(c => row[c.Name])));
-
-    return response;
+            return response;
+        });
 }
 
 function applySorting(request, subset) {
@@ -163,39 +158,35 @@ function getAggregatePayloads(request, subset) {
     }));
 }
 
-function applyFreeTextSearch(request, subset, response) {
+function applyFreeTextSearch(request, subset) {
     // Free text-search 
     if (!request.Search) {
         return subset;
     }
 
-    switch (request.Search.Operator) {
+    if (request.Search.Operator == CompareOperators.auto) {
+        let searchableColumns = _.filter(request.Columns, 'Searchable');
 
-        case CompareOperators.auto:
-
-            let searchableColumns = _.filter(request.Columns, column => column.Searchable);
-
-            if (searchableColumns.length > 0) {
-                subset = subset.where(function () {
-                    let isFirst = true;
-                    let _subset = this;
-                    searchableColumns.forEach(column => {
-                        if (isFirst) {
-                            _subset.where(column.Name, 'LIKE', '%' + request.Search.Text + '%');
-                            isFirst = false;
-                        }
-                        else
-                            _subset.orWhere(column.Name, 'LIKE', '%' + request.Search.Text + '%');
-                    });
-                })
-            }
-            break;
+        if (searchableColumns.length > 0) {
+            subset = subset.where(function () {
+                let isFirst = true;
+                let _subset = this;
+                searchableColumns.forEach(column => {
+                    if (isFirst) {
+                        _subset.where(column.Name, 'LIKE', '%' + request.Search.Text + '%');
+                        isFirst = false;
+                    }
+                    else
+                        _subset.orWhere(column.Name, 'LIKE', '%' + request.Search.Text + '%');
+                });
+            })
+        }
     }
 
     return subset;
 }
 
-function applyFiltering(request, subset, response) {
+function applyFiltering(request, subset) {
 
     // Filter by columns
     let filteredColumns = request.Columns.filter((column) => column.Filter && (column.Filter.Text || column.Filter.Argument));
@@ -243,6 +234,5 @@ function applyFiltering(request, subset, response) {
 
     return subset;
 }
-
 
 module.exports = { createGridResponse: createGridResponse };

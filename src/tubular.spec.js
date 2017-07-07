@@ -18,23 +18,18 @@ describe("tubular", function () {
         expect(tubular.createGridResponse).toBeDefined();
     });
 
-    it(" must failed when no columns", done => {
+    it(" must failed when no columns", () => {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
-        tubular.createGridResponse({}, queryBuilder)
-            .catch(error => {
-                expect(error).toBe('No Columns specified on the request')
-                done();
-            });
+        expect(() => tubular.createGridResponse({}, queryBuilder)).toThrow('No Columns specified on the request');
     });
 
-    it(" must failed when no request", done => {
+    it(" must failed when no request", () => {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+        expect(() => tubular.createGridResponse(null, queryBuilder)).toThrow('"request" cannot be null');
+    });
 
-        tubular.createGridResponse(null, queryBuilder)
-            .catch(error => {
-                expect(error).toBe('"request" cannot be null')
-                done();
-            });
+    it(" must failed when no subset", () => {
+        expect(() => tubular.createGridResponse({}, null)).toThrow('"subset" cannot be null');
     });
 
     it(" use free text search", done => {
