@@ -116,26 +116,11 @@ async function createGridResponse(request, subset) {
 
     response.Payload = await createGridPayload(request, subset);
 
-
     return response;
 }
 
 async function createGridPayload(request, subset) {
-
-    return subset.then(function (rows) {
-        let payload = [];
-        _.forEach(rows, row => {
-            let item = [];
-
-            _.forEach(request.Columns, column => {
-                item.push(row[column.Name]);
-            })
-
-            payload.push(item);
-        })
-
-        return payload;
-    });
+    return subset.then(rows => rows.map(row => request.Columns.map(c => row[c.Name])));
 }
 
 function applySorting(request, subset) {
@@ -153,22 +138,13 @@ function applySorting(request, subset) {
     return subset;
 }
 
-async function getAggregateResult(subset) {
-    return subset.then(result => {
-        return result[0].tbResult;
-    });
-}
-
 async function getAggregatePayloads(request, subset) {
     let payload = {};
     let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
 
-
     if (aggregateColumns.length > 0) {
 
         _.forEach(aggregateColumns, async (column) => {
-            let properAggregate = true;
-
             // Do not disrupt the original query chain
             let copyOfSubset = subset.clone();
 
@@ -195,15 +171,10 @@ async function getAggregatePayloads(request, subset) {
                     copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
                     break;
                 default:
-                    properAggregate = false;
-                    break;
+                    return;
             }
 
-            if (properAggregate) {
-                payload[column.Name] = await copyOfSubset.then(result => {
-                    return result[0].tbResult;
-                });
-            }
+            await copyOfSubset.then(result => { payload[column.Name] = result[0].tbResult });
         });
     }
 

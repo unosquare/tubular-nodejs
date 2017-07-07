@@ -35,5 +35,11 @@
     "jasmine": "^2.6.0",
     "mysql": "^2.13.0",
     "nyc": "^11.0.3"
+  },
+  "nyc": {
+    "exclude": [
+      "**/*.spec.js",
+      "build"
+    ]
   }
 }
