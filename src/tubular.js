@@ -51,7 +51,6 @@ function getCompareOperator(operator) {
 }
 
 async function createGridResponse(request, subset) {
-
     if (!request)
         throw '"request" cannot be null';
 
@@ -60,14 +59,12 @@ async function createGridResponse(request, subset) {
 
     const originalCount = await subset.clone().clearSelect()
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => {
-            return result[0].tbResult;
-        });
+        .then(result => result[0].tbResult);
 
     let response = {
         Counter: request.Counter,
         TotalRecordCount: originalCount,
-        FilteredRecordCount: originalCount,
+        FilteredRecordCount: originalCount
     };
 
     subset = applyFreeTextSearch(request, subset, response);
@@ -75,9 +72,7 @@ async function createGridResponse(request, subset) {
 
     response.FilteredRecordCount = await subset.clone().clearSelect()
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => {
-            return result[0].tbResult;
-        });
+        .then(result => result[0].tbResult);
 
     let subsetForAggregates = subset.clone();
 
@@ -113,13 +108,9 @@ async function createGridResponse(request, subset) {
         subset = subset.limit(pageSize);
     }
 
-    response.Payload = await createGridPayload(request, subset);
+    response.Payload = await subset.then(rows => rows.map(row => request.Columns.map(c => row[c.Name])));
 
     return response;
-}
-
-async function createGridPayload(request, subset) {
-    return subset.then(rows => rows.map(row => request.Columns.map(c => row[c.Name])));
 }
 
 function applySorting(request, subset) {
@@ -128,7 +119,7 @@ function applySorting(request, subset) {
     if (sortedColumns.length > 0) {
         sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
 
-        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? "asc" : "desc")));
+        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? 'asc' : 'desc')));
     } else {
         // Default sorting
         subset = subset.orderBy(request.Columns[0].Name, 'asc');
@@ -138,7 +129,7 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayloads(request, subset) {
-    return Promise.all(_.filter(request.Columns, column => column.Aggregate !== 'None').map(column => {
+    return Promise.all(_.map(request.Columns, column => {
         // Do not disrupt the original query chain
         let copyOfSubset = subset.clone();
 
@@ -174,30 +165,31 @@ function getAggregatePayloads(request, subset) {
 
 function applyFreeTextSearch(request, subset, response) {
     // Free text-search 
-    if (request.Search && request.Search.Operator) {
+    if (!request.Search) {
+        return subset;
+    }
 
-        switch (request.Search.Operator) {
+    switch (request.Search.Operator) {
 
-            case CompareOperators.auto:
+        case CompareOperators.auto:
 
-                let searchableColumns = _.filter(request.Columns, column => column.Searchable);
+            let searchableColumns = _.filter(request.Columns, column => column.Searchable);
 
-                if (searchableColumns.length > 0) {
-                    subset = subset.where(function () {
-                        let isFirst = true;
-                        let _subset = this;
-                        searchableColumns.forEach((column) => {
-                            if (isFirst) {
-                                _subset.where(column.Name, 'LIKE', '%' + request.Search.Text + '%');
-                                isFirst = false;
-                            }
-                            else
-                                _subset.orWhere(column.Name, 'LIKE', '%' + request.Search.Text + '%');
-                        });
-                    })
-                }
-                break;
-        }
+            if (searchableColumns.length > 0) {
+                subset = subset.where(function () {
+                    let isFirst = true;
+                    let _subset = this;
+                    searchableColumns.forEach(column => {
+                        if (isFirst) {
+                            _subset.where(column.Name, 'LIKE', '%' + request.Search.Text + '%');
+                            isFirst = false;
+                        }
+                        else
+                            _subset.orWhere(column.Name, 'LIKE', '%' + request.Search.Text + '%');
+                    });
+                })
+            }
+            break;
     }
 
     return subset;
