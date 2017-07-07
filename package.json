@@ -1,6 +1,6 @@
 {
   "name": "tubular-nodejs",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Tubular Node.js Backend",
   "main": "index.js",
   "scripts": {
