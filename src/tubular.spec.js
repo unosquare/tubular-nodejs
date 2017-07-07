@@ -289,7 +289,6 @@ describe("tubular", function () {
             });
     });
 
-
     it(" aggregate on one column", done => {
         const skip = 0,
             take = 10,
@@ -338,43 +337,54 @@ describe("tubular", function () {
             });
     });
 
-    // it(" use aggregate on two columns", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+    it(" aggregate on two columns", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 32,
+            totalRecordCount = 16049;
 
-    //     let request = {
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'Author', Label: 'Author', Sortable: true, SortOrder: 3, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
-    //             { Name: 'Year', Label: 'Year', Sortable: true, SortOrder: 2, SortDirection: 'Descending', Searchable: true, Aggregate: "Sum" }
-    //         ]
-    //     };
+        let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
 
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = tubular.applyFiltering(request, subset);
-    //     // subset = tubular.applySorting(request, subset);
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
+                        Name: '',
+                        Text: 1,
+                        Argument: [],
+                        Operator: 'Equals',
+                        HasFilter: false
+                    }
+                },
+                {
+                    Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
+                },
+                {
+                    Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: 'Count'
+                }
+            ]
+        };
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
-    //     let result = subset.toString();
-    //     expect(result).toBe(expected);
+        tubular.createGridResponse(request, queryBuilder)
+            .then(response => {
 
-    //     let authorAggregate = "select count([Author]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let yearAggregate = "select sum([Year]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let resultAggregate = tubular.getAggregatePayloads(request, subset);
-
-    //     expect(resultAggregate.Author).toBeDefined();
-    //     expect(resultAggregate.Author.toString()).toBe(authorAggregate);
-
-    //     expect(resultAggregate.Year).toBeDefined();
-    //     expect(resultAggregate.Year.toString()).toBe(yearAggregate);
-    // });
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBe(take);
+                expect(response.AggregationPayload).toBeDefined();
+                expect(response.AggregationPayload.amount).toBeDefined(0);
+                expect(response.AggregationPayload.amount).toBeGreaterThan(0);
+                expect(response.AggregationPayload.payment_id).toBeDefined(0);
+                expect(response.AggregationPayload.payment_id).toBeGreaterThan(0);
+                
+                done();
+            });
+    });
 
     // it(" use all possible aggregates", function () {
     //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');

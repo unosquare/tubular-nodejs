@@ -83,15 +83,14 @@ async function createGridResponse(request, subset) {
 
     subset = applySorting(request, subset);
 
-    response.AggregationPayload = await getAggregatePayloads(request, subsetForAggregates);
+    response.AggregationPayload = await getAggregatePayloads(request, subsetForAggregates)
+        .then(values => _.reduce(_.pickBy(values, _.identity), (result, value) => _.merge(result, value), {}));
 
     let pageSize = +request.Take;
 
     const subsetCount = await subsetForAggregates
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => {
-            return result[0].tbResult;
-        });
+        .then(result => result[0].tbResult);
 
     // Take with value -1 represents entire set
     if (request.Take == -1) {
@@ -138,47 +137,39 @@ function applySorting(request, subset) {
     return subset;
 }
 
-async function getAggregatePayloads(request, subset) {
-    let payload = {};
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
+function getAggregatePayloads(request, subset) {
+    return Promise.all(_.filter(request.Columns, column => column.Aggregate !== 'None').map(column => {
+        // Do not disrupt the original query chain
+        let copyOfSubset = subset.clone();
 
-    if (aggregateColumns.length > 0) {
+        // in order to work with aggregates
+        copyOfSubset.clearSelect();
 
-        _.forEach(aggregateColumns, async (column) => {
-            // Do not disrupt the original query chain
-            let copyOfSubset = subset.clone();
+        switch (column.Aggregate) {
+            case AggregationFunction.sum:
+                copyOfSubset = copyOfSubset.sum(`${column.Name} as tbResult`);
+                break;
+            case AggregationFunction.average:
+                copyOfSubset = copyOfSubset.avg(`${column.Name} as tbResult`);
+                break;
+            case AggregationFunction.max:
+                copyOfSubset = copyOfSubset.max(`${column.Name} as tbResult`);
+                break;
+            case AggregationFunction.min:
+                copyOfSubset = copyOfSubset.min(`${column.Name} as tbResult`);
+                break;
+            case AggregationFunction.count:
+                copyOfSubset = copyOfSubset.count(`${column.Name} as tbResult`);
+                break;
+            case AggregationFunction.distinctCount:
+                copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
+                break;
+            default:
+                return;
+        }
 
-            // in order to work with aggregates
-            copyOfSubset.clearSelect();
-
-            switch (column.Aggregate) {
-                case AggregationFunction.sum:
-                    copyOfSubset = copyOfSubset.sum(`${column.Name} as tbResult`);
-                    break;
-                case AggregationFunction.average:
-                    copyOfSubset = copyOfSubset.avg(`${column.Name} as tbResult`);
-                    break;
-                case AggregationFunction.max:
-                    copyOfSubset = copyOfSubset.max(`${column.Name} as tbResult`);
-                    break;
-                case AggregationFunction.min:
-                    copyOfSubset = copyOfSubset.min(`${column.Name} as tbResult`);
-                    break;
-                case AggregationFunction.count:
-                    copyOfSubset = copyOfSubset.count(`${column.Name} as tbResult`);
-                    break;
-                case AggregationFunction.distinctCount:
-                    copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
-                    break;
-                default:
-                    return;
-            }
-
-            await copyOfSubset.then(result => { payload[column.Name] = result[0].tbResult });
-        });
-    }
-
-    return payload;
+        return copyOfSubset.then(result => ({ [column.Name]: result[0].tbResult }));
+    }));
 }
 
 function applyFreeTextSearch(request, subset, response) {
