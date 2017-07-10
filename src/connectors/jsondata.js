@@ -2,12 +2,13 @@ var _ = require('lodash');
 var CompareOperators = require('../compare-operators');
 
 function createGridResponse(request, subset) {
-    var response = { 
-        Counter: request.Counter, 
+    var response = {
+        Counter: request.Counter,
         TotalRecordCount: subset.length
     };
 
     subset = applyFreeTextSearch(request, subset);
+    subset = applyFiltering(request, subset);
 
     response.FilteredRecordCount = subset.length;
 
@@ -46,8 +47,64 @@ function applyFreeTextSearch(request, subset) {
     return subset;
 }
 
+function applyFiltering(request, subset) {
 
-module.exports = function(options){ 
+    // Filter by columns
+    let filteredColumns = request.Columns.filter((column) => column.Filter && (column.Filter.Text || column.Filter.Argument));
+
+    filteredColumns.forEach(filterableColumn => {
+
+        request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
+
+        switch (filterableColumn.Filter.Operator) {
+            case CompareOperators.equals:
+                subset = subset.filter(row => row[filterableColumn.Name] == filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.notEquals:
+                subset = subset.filter(row => row[filterableColumn.Name] != filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.contains:
+                subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) >= 0);
+                break;
+            case CompareOperators.notContains:
+                subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) < 0);
+                break;
+            case CompareOperators.startsWith:
+                subset = subset.filter(row => row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
+                break;
+            case CompareOperators.notStartsWith:
+                subset = subset.filter(row => !row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
+                break;
+            case CompareOperators.endsWith:
+                subset = subset.filter(row => row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
+                break;
+            case CompareOperators.notEndsWith:
+                subset = subset.filter(row => !row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
+                break;
+            // TODO: check for types
+            case CompareOperators.gt:
+                subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.gte:
+                subset = subset.filter(row => row[filterableColumn.Name] >= filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.lt:
+                subset = subset.filter(row => row[filterableColumn.Name] < filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.lte:
+                subset = subset.filter(row => row[filterableColumn.Name] <= filterableColumn.Filter.Text);
+                break;
+            case CompareOperators.between:
+                subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text && row[filterableColumn.Name] < filterableColumn.Filter.Argument[0]);
+                break;
+        }
+    });
+
+    return subset;
+}
+
+
+module.exports = function (options) {
     return {
         createGridResponse: createGridResponse
     };
