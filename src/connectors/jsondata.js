@@ -9,8 +9,12 @@ function createGridResponse(request, subset) {
 
     subset = applyFreeTextSearch(request, subset);
     subset = applyFiltering(request, subset);
+    subset = applySorting(request, subset);
 
     response.FilteredRecordCount = subset.length;
+
+    let offset = request.Skip;
+    let limit = request.Take;
 
     // Take with value -1 represents entire set
     if (request.Take > -1) {
@@ -18,16 +22,11 @@ function createGridResponse(request, subset) {
 
         if (response.TotalPages > 0) {
             response.CurrentPage = request.Skip / request.Take + 1;
-
-            if (request.Skip > 0) {
-                //subset = subset.offset(request.Skip);
-            }
         }
-
-        //subset = subset.limit(request.Take);
     }
 
-    response.Payload = subset;
+    subset = _.slice(subset, offset, offset + limit);
+    response.Payload = subset.map(row => request.Columns.map(c => row[c.Name]));
 
     return Promise.resolve(response);
 }
@@ -99,6 +98,22 @@ function applyFiltering(request, subset) {
                 break;
         }
     });
+
+    return subset;
+}
+
+
+function applySorting(request, subset) {
+    let sortedColumns = _.filter(request.Columns, column => column.SortOrder > 0);
+
+    if (sortedColumns.length > 0) {
+        sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
+
+        _.forEachRight(sortedColumns, column => _.orderBy(subset, column.Name, (column.SortDirection == 'Ascending' ? 'asc' : 'desc')));
+    } else {
+        // Default sorting
+        subset = _.orderBy(subset, request.Columns[0].Name, 'asc');
+    }
 
     return subset;
 }

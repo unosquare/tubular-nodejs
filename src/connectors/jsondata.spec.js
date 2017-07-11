@@ -130,4 +130,75 @@ describe("jsondata connector", function () {
                 done();
             });
     });
+
+    it(" sorts by default column", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 50,
+            totalRecordCount = 50;
+
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                }
+            ]
+        };
+
+        tubular.createGridResponse(request, data)
+            .then(response => {
+                console.log(response);
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBe(take);
+                expect(response.Payload[0][0]).toBe('Abramo');
+                done();
+            });
+    });
+
+    it(" sorts by default column and go to page 2", done => {
+        const skip = 10,
+            take = 10,
+            filteredCount = 50,
+            totalRecordCount = 50;
+
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                },
+                {
+                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                }
+            ]
+        };
+
+        tubular.createGridResponse(request, data)
+            .then(response => {
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBe(take);
+                expect(response.Payload[0][0]).toBe('Clare');
+                done();
+            });
+    });
 });
