@@ -109,7 +109,15 @@ function applySorting(request, subset) {
     if (sortedColumns.length > 0) {
         sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
 
-        _.forEachRight(sortedColumns, column => _.orderBy(subset, column.Name, (column.SortDirection == 'Ascending' ? 'asc' : 'desc')));
+        let columns = [],
+            orders = [];
+
+        _.forEachRight(sortedColumns, column => {
+            columns.push(column.Name);
+            orders.push((column.SortDirection == 'Ascending' ? 'asc' : 'desc'));
+        });
+
+        subset = _.orderBy(subset, columns, orders);
     } else {
         // Default sorting
         subset = _.orderBy(subset, request.Columns[0].Name, 'asc');
