@@ -1,5 +1,7 @@
 var _ = require('lodash');
-var CompareOperators = require('../compare-operators');
+var Utils = require('../utils.js');
+var CompareOperators = Utils.CompareOperators;
+var SortDirection = Utils.SortDirection;
 
 function createGridResponse(request, subset) {
     var response = {
@@ -114,7 +116,7 @@ function applySorting(request, subset) {
 
         _.forEachRight(sortedColumns, column => {
             columns.push(column.Name);
-            orders.push((column.SortDirection == 'Ascending' ? 'asc' : 'desc'));
+            orders.push((column.SortDirection == SortDirection.ascending ? 'asc' : 'desc'));
         });
 
         subset = _.orderBy(subset, columns, orders);

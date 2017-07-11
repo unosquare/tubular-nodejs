@@ -1,6 +1,8 @@
 var _ = require('lodash');
-var CompareOperators = require('../compare-operators');
-var AggregationFunction = require('../aggregate-function');
+var Utils = require('../utils.js');
+var CompareOperators = Utils.CompareOperators;
+var AggregationFunction = Utils.AggregationFunction;
+var SortDirection = Utils.SortDirection;
 
 function getCompareOperator(operator) {
     switch (operator) {
@@ -77,7 +79,7 @@ function applySorting(request, subset) {
     if (sortedColumns.length > 0) {
         sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
 
-        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == 'Ascending' ? 'asc' : 'desc')));
+        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.SortDirection == SortDirection.ascending ? 'asc' : 'desc')));
     } else {
         // Default sorting
         subset = subset.orderBy(request.Columns[0].Name, 'asc');
