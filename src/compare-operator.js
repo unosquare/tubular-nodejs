@@ -1,4 +1,4 @@
-const CompareOperators = {
+const CompareOperator = {
     none: 'None',
     auto: 'Auto',
     equals: 'Equals',
@@ -17,4 +17,4 @@ const CompareOperators = {
     notEndsWith: 'NotEndsWith'
 }
 
-module.exports = CompareOperators;
+module.exports = CompareOperator;

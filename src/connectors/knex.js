@@ -1,21 +1,21 @@
 var _ = require('lodash');
-var CompareOperators = require('../compare-operators');
+var CompareOperator = require('../compare-operator');
 var AggregationFunction = require('../aggregate-function');
 var SortDirection = require('../sort-direction');
 
 function getCompareOperator(operator) {
     switch (operator) {
-        case CompareOperators.equals:
+        case CompareOperator.equals:
             return '=';
-        case CompareOperators.notEquals:
+        case CompareOperator.notEquals:
             return '!=';
-        case CompareOperators.gte:
+        case CompareOperator.gte:
             return '>=';
-        case CompareOperators.gt:
+        case CompareOperator.gt:
             return '>';
-        case CompareOperators.lte:
+        case CompareOperator.lte:
             return '<=';
-        case CompareOperators.lt:
+        case CompareOperator.lt:
             return '<';
         default:
             return null;
@@ -39,7 +39,7 @@ function createGridResponse(request, subset) {
 
     let subsetForAggregates = subset.clone();
 
-    promises.push(getAggregatePayloads(request, subsetForAggregates)
+    promises.push(getAggregatePayload(request, subsetForAggregates)
         .then(values => ({ AggregationPayload: _.reduce(values, _.merge, {}) })));
 
     let response = { Counter: request.Counter, TotalPages: 1, CurrentPage: 1 };
@@ -87,8 +87,10 @@ function applySorting(request, subset) {
     return subset;
 }
 
-function getAggregatePayloads(request, subset) {
-    return Promise.all(_.map(request.Columns, column => {
+function getAggregatePayload(request, subset) {
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
+
+    return Promise.all(_.map(aggregateColumns, column => {
         // Do not disrupt the original query chain
         let copyOfSubset = subset.clone();
 
@@ -115,7 +117,7 @@ function getAggregatePayloads(request, subset) {
                 copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
                 break;
             default:
-                return;
+                throw "Unsupported aggregate function";
         }
 
         return copyOfSubset.then(result => ({ [column.Name]: result[0].tbResult }));
@@ -124,7 +126,7 @@ function getAggregatePayloads(request, subset) {
 
 function applyFreeTextSearch(request, subset) {
     // Free text-search 
-    if (request.Search && request.Search.Operator == CompareOperators.auto) {
+    if (request.Search && request.Search.Operator == CompareOperator.auto) {
         let searchableColumns = _.filter(request.Columns, 'Searchable');
 
         if (searchableColumns.length > 0) {
@@ -155,37 +157,37 @@ function applyFiltering(request, subset) {
         request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
 
         switch (filterableColumn.Filter.Operator) {
-            case CompareOperators.equals:
+            case CompareOperator.equals:
                 subset = subset.where(filterableColumn.Name, filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.notEquals:
+            case CompareOperator.notEquals:
                 subset = subset.whereNot(filterableColumn.Name, filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.contains:
+            case CompareOperator.contains:
                 subset = subset.where(filterableColumn.Name, 'LIKE', `%${filterableColumn.Filter.Text}%`);
                 break;
-            case CompareOperators.notContains:
+            case CompareOperator.notContains:
                 subset = subset.whereNot(filterableColumn.Name, 'LIKE', `%${filterableColumn.Filter.Text}%`);
                 break;
-            case CompareOperators.startsWith:
+            case CompareOperator.startsWith:
                 subset = subset.where(filterableColumn.Name, 'LIKE', `${filterableColumn.Filter.Text}%`);
                 break;
-            case CompareOperators.notStartsWith:
+            case CompareOperator.notStartsWith:
                 subset = subset.whereNot(filterableColumn.Name, 'LIKE', `${filterableColumn.Filter.Text}%`);
                 break;
-            case CompareOperators.endsWith:
+            case CompareOperator.endsWith:
                 subset = subset.where(filterableColumn.Name, 'LIKE', `%${filterableColumn.Filter.Text}`);
                 break;
-            case CompareOperators.notEndsWith:
+            case CompareOperator.notEndsWith:
                 subset = subset.whereNot(filterableColumn.Name, 'LIKE', `%${filterableColumn.Filter.Text}`);
                 break;
-            case CompareOperators.gt:
-            case CompareOperators.gte:
-            case CompareOperators.lt:
-            case CompareOperators.lte:
+            case CompareOperator.gt:
+            case CompareOperator.gte:
+            case CompareOperator.lt:
+            case CompareOperator.lte:
                 subset = subset.where(filterableColumn.Name, getCompareOperator(filterableColumn.Filter.Operator), filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.between:
+            case CompareOperator.between:
                 subset = subset.whereBetween(filterableColumn.Name, [filterableColumn.Filter.Text, filterableColumn.Filter.Argument[0]]);
                 break;
         }

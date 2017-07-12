@@ -1,5 +1,5 @@
 var _ = require('lodash');
-var CompareOperators = require('../compare-operators');
+var CompareOperator = require('../compare-operator');
 var AggregationFunction = require('../aggregate-function');
 var SortDirection = require('../sort-direction');
 
@@ -27,7 +27,7 @@ function createGridResponse(request, subset) {
         }
     }
 
-    response.AggregationPayload = getAggregatePayloads(request, subset);
+    response.AggregationPayload = getAggregatePayload(request, subset);
 
     subset = _.slice(subset, offset, offset + limit);
     response.Payload = subset.map(row => request.Columns.map(c => row[c.Name]));
@@ -39,7 +39,7 @@ function createGridResponse(request, subset) {
 
 function applyFreeTextSearch(request, subset) {
     // Free text-search 
-    if (request.Search && request.Search.Operator == CompareOperators.auto) {
+    if (request.Search && request.Search.Operator == CompareOperator.auto) {
         let searchableColumns = _.filter(request.Columns, 'Searchable');
 
         if (searchableColumns.length > 0) {
@@ -61,44 +61,44 @@ function applyFiltering(request, subset) {
         request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
 
         switch (filterableColumn.Filter.Operator) {
-            case CompareOperators.equals:
+            case CompareOperator.equals:
                 subset = subset.filter(row => row[filterableColumn.Name] == filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.notEquals:
+            case CompareOperator.notEquals:
                 subset = subset.filter(row => row[filterableColumn.Name] != filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.contains:
+            case CompareOperator.contains:
                 subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) >= 0);
                 break;
-            case CompareOperators.notContains:
+            case CompareOperator.notContains:
                 subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) < 0);
                 break;
-            case CompareOperators.startsWith:
+            case CompareOperator.startsWith:
                 subset = subset.filter(row => row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperators.notStartsWith:
+            case CompareOperator.notStartsWith:
                 subset = subset.filter(row => !row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperators.endsWith:
+            case CompareOperator.endsWith:
                 subset = subset.filter(row => row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperators.notEndsWith:
+            case CompareOperator.notEndsWith:
                 subset = subset.filter(row => !row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
                 break;
             // TODO: check for types
-            case CompareOperators.gt:
+            case CompareOperator.gt:
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.gte:
+            case CompareOperator.gte:
                 subset = subset.filter(row => row[filterableColumn.Name] >= filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.lt:
+            case CompareOperator.lt:
                 subset = subset.filter(row => row[filterableColumn.Name] < filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.lte:
+            case CompareOperator.lte:
                 subset = subset.filter(row => row[filterableColumn.Name] <= filterableColumn.Filter.Text);
                 break;
-            case CompareOperators.between:
+            case CompareOperator.between:
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text && row[filterableColumn.Name] < filterableColumn.Filter.Argument[0]);
                 break;
         }
@@ -131,7 +131,7 @@ function applySorting(request, subset) {
     return subset;
 }
 
-function getAggregatePayloads(request, subset) {
+function getAggregatePayload(request, subset) {
     let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
 
     const results = _.map(aggregateColumns, column => {
@@ -158,8 +158,7 @@ function getAggregatePayloads(request, subset) {
                 }).length;
                 break;
             default:
-                value = 0;
-                return;
+                throw "Unsupported aggregate function";
         }
 
         return { [column.Name]: value };
