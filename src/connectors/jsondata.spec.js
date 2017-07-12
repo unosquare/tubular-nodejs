@@ -271,4 +271,46 @@ describe("jsondata connector", function () {
                 done();
             });
     });
+
+    it(" aggregate: sum and distinct count", done => {
+        const skip = 0,
+            take = 10,
+            filteredCount = 50,
+            totalRecordCount = 50;
+
+        let request = {
+            Skip: skip,
+            Take: take,
+            Counter: 1,
+            Columns: [
+                {
+                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                },
+                {
+                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                },
+                {
+                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Sum'
+                },
+                {
+                    Name: 'is_active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: 'DistinctCount'
+                }
+            ]
+        };
+
+        tubular.createGridResponse(request, data)
+            .then(response => {
+
+                expect(response.Counter).toBeDefined();
+                expect(response.TotalRecordCount).toBe(totalRecordCount);
+                expect(response.FilteredRecordCount).toBe(filteredCount);
+                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                expect(response.Payload.length).toBe(take);
+                expect(response.AggregationPayload).toBeDefined();
+                expect(response.AggregationPayload.is_active).toBe(2);
+                expect(response.AggregationPayload.address_id).toBe(1275);
+
+                done();
+            });
+    });
 });

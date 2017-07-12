@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var CompareOperators = require('../compare-operators');
+var AggregationFunction = require('../aggregate-function');
 var SortDirection = require('../sort-direction');
 
 function createGridResponse(request, subset) {
@@ -26,8 +27,11 @@ function createGridResponse(request, subset) {
         }
     }
 
+    response.AggregationPayload = getAggregatePayloads(request, subset);
+
     subset = _.slice(subset, offset, offset + limit);
     response.Payload = subset.map(row => request.Columns.map(c => row[c.Name]));
+
 
     return Promise.resolve(response);
 }
@@ -127,6 +131,42 @@ function applySorting(request, subset) {
     return subset;
 }
 
+function getAggregatePayloads(request, subset) {
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
+
+    const results = _.map(aggregateColumns, column => {
+        let value;
+        switch (column.Aggregate) {
+            case AggregationFunction.sum:
+                value = _.sumBy(subset, column.Name);
+                break;
+            case AggregationFunction.average:
+                value = _.meanBy(subset, column.Name);
+                break;
+            case AggregationFunction.max:
+                value = _.maxBy(subset, column.Name);
+                break;
+            case AggregationFunction.min:
+                value = _.minBy(subset, column.Name);
+                break;
+            case AggregationFunction.count:
+                value = subset.length;
+                break;
+            case AggregationFunction.distinctCount:
+                value = _.uniqWith(subset, (a, b) => {
+                    return a[column.Name] == b[column.Name];
+                }).length;
+                break;
+            default:
+                value = 0;
+                return;
+        }
+
+        return { [column.Name]: value };
+    });
+
+    return _.reduce(results, _.merge, {});
+}
 
 module.exports = function (options) {
     return {
