@@ -1,8 +1,7 @@
 var _ = require('lodash');
-var Utils = require('../utils.js');
-var CompareOperators = Utils.CompareOperators;
-var AggregationFunction = Utils.AggregationFunction;
-var SortDirection = Utils.SortDirection;
+var CompareOperators = require('../compare-operators');
+var AggregationFunction = require('../aggregate-function');
+var SortDirection = require('../sort-direction');
 
 function getCompareOperator(operator) {
     switch (operator) {
@@ -26,17 +25,17 @@ function getCompareOperator(operator) {
 function createGridResponse(request, subset) {
     let promises = [
         subset.clone().clearSelect()
-        .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => ({TotalRecordCount : result[0].tbResult }))
+            .count(`${request.Columns[0].Name} as tbResult`)
+            .then(result => ({ TotalRecordCount: result[0].tbResult }))
     ];
-    
+
     subset = applyFreeTextSearch(request, subset);
     subset = applyFiltering(request, subset);
     subset = applySorting(request, subset);
 
     promises.push(subset.clone().clearSelect()
         .count(`${request.Columns[0].Name} as tbResult`)
-        .then(result => ({ FilteredRecordCount : result[0].tbResult } )));
+        .then(result => ({ FilteredRecordCount: result[0].tbResult })));
 
     let subsetForAggregates = subset.clone();
 
@@ -44,7 +43,7 @@ function createGridResponse(request, subset) {
         .then(values => ({ AggregationPayload: _.reduce(values, _.merge, {}) })));
 
     let response = { Counter: request.Counter, TotalPages: 1, CurrentPage: 1 };
-    
+
     return Promise.all(promises)
         .then(values => {
             response = _.reduce(values, _.merge, response);
@@ -195,8 +194,8 @@ function applyFiltering(request, subset) {
     return subset;
 }
 
-module.exports = function(options){ 
+module.exports = function (options) {
     return {
-        createGridResponse: createGridResponse 
+        createGridResponse: createGridResponse
     };
 };

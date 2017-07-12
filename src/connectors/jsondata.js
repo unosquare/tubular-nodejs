@@ -1,7 +1,6 @@
 var _ = require('lodash');
-var Utils = require('../utils.js');
-var CompareOperators = Utils.CompareOperators;
-var SortDirection = Utils.SortDirection;
+var CompareOperators = require('../compare-operators');
+var SortDirection = require('../sort-direction');
 
 function createGridResponse(request, subset) {
     var response = {
