@@ -12,7 +12,7 @@ describe("tubular", function () {
     });
 
     it(" must failed when no request", () => {
-        expect(() => tubular.createGridResponse(null, {})).toThrow('"request" must be an instance of GridDataRequest');
+        expect(() => tubular.createGridResponse(null, {})).toThrow('"request" cannot be null');
     });
 
     it(" must failed when no subset", () => {

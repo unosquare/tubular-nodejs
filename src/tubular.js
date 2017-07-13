@@ -6,8 +6,8 @@ module.exports = function Tubular(connectorName, options) {
     return {
         connector: connectorInstance,
         createGridResponse: function (request, subset) {
-            if (!(request instanceof GridDataRequest))
-                throw '"request" must be an instance of GridDataRequest';
+            if (!request)
+                throw '"request" cannot be null';
 
             if (!subset)
                 throw '"subset" cannot be null';
