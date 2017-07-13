@@ -1,4 +1,5 @@
 var tubular = require('../tubular')('knex');
+var GridDataRequest = require('../grid-data-request');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -19,7 +20,7 @@ describe("knex connector", function () {
 
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -35,7 +36,7 @@ describe("knex connector", function () {
                 Operator: 'Auto',
                 HasFilter: false
             }
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -57,7 +58,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -81,7 +82,7 @@ describe("knex connector", function () {
                 Operator: 'Auto',
                 HasFilter: false
             }
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -103,7 +104,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -135,7 +136,7 @@ describe("knex connector", function () {
                 Operator: 'Auto',
                 HasFilter: false
             }
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -157,7 +158,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -172,7 +173,7 @@ describe("knex connector", function () {
                     Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                 }
             ]
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -195,7 +196,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -210,7 +211,7 @@ describe("knex connector", function () {
                     Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                 }
             ]
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -233,7 +234,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -248,7 +249,7 @@ describe("knex connector", function () {
                     Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, SortDirection: 'Ascending'
                 }
             ]
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -272,7 +273,7 @@ describe("knex connector", function () {
         let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
 
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -293,7 +294,7 @@ describe("knex connector", function () {
                     Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
                 }
             ]
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -319,7 +320,7 @@ describe("knex connector", function () {
 
         let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
 
-        let request = {
+        let request = new GridDataRequest({
             Skip: skip,
             Take: take,
             Counter: 1,
@@ -340,7 +341,7 @@ describe("knex connector", function () {
                     Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: 'Count'
                 }
             ]
-        };
+        });
 
         tubular.createGridResponse(request, queryBuilder)
             .then(response => {
@@ -363,7 +364,7 @@ describe("knex connector", function () {
     // it(" use all possible aggregates", function () {
     //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
 
-    //     let request = {
+    //     let request = new GridDataRequest({
     //         Columns: [
     //             {
     //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {

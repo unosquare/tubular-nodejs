@@ -2,12 +2,15 @@ var _ = require('lodash');
 var CompareOperator = require('../compare-operator');
 var AggregationFunction = require('../aggregate-function');
 var SortDirection = require('../sort-direction');
+var GridDataResponse = require('../grid-data-response');
 
 function createGridResponse(request, subset) {
-    var response = {
+
+    let response = new GridDataResponse({
         Counter: request.Counter,
-        TotalRecordCount: subset.length
-    };
+        TotalRecordCount: subset.length,
+        CurrentPage: 1
+    });
 
     subset = applyFreeTextSearch(request, subset);
     subset = applyFiltering(request, subset);
@@ -31,7 +34,6 @@ function createGridResponse(request, subset) {
 
     subset = _.slice(subset, offset, offset + limit);
     response.Payload = subset.map(row => request.Columns.map(c => row[c.Name]));
-
 
     return Promise.resolve(response);
 }

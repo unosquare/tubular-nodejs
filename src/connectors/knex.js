@@ -2,6 +2,7 @@ var _ = require('lodash');
 var CompareOperator = require('../compare-operator');
 var AggregationFunction = require('../aggregate-function');
 var SortDirection = require('../sort-direction');
+var GridDataResponse = require('../grid-data-response');
 
 function getCompareOperator(operator) {
     switch (operator) {
@@ -42,7 +43,11 @@ function createGridResponse(request, subset) {
     promises.push(getAggregatePayload(request, subsetForAggregates)
         .then(values => ({ AggregationPayload: _.reduce(values, _.merge, {}) })));
 
-    let response = { Counter: request.Counter, TotalPages: 1, CurrentPage: 1 };
+    let response = new GridDataResponse({
+        Counter: request.Counter,
+        TotalPages: 1,
+        CurrentPage: 1
+    });
 
     return Promise.all(promises)
         .then(values => {
