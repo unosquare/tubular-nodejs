@@ -15,7 +15,7 @@ function getCompareOperator(operator) {
         case CompareOperator.lt:
             return '<';
         default:
-            throw "Unsopported Compare Operator";
+            throw "Unsupported Compare Operator";
     }
 }
 
