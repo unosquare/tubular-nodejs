@@ -76,16 +76,16 @@ function applyFiltering(request, subset) {
                 subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) < 0);
                 break;
             case CompareOperator.startsWith:
-                subset = subset.filter(row => row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
+                subset = subset.filter(row => row[filterableColumn.Name].toLowerCase().startsWith(filterableColumn.Filter.Text));
                 break;
             case CompareOperator.notStartsWith:
-                subset = subset.filter(row => !row[filterableColumn.Name].startsWith(filterableColumn.Filter.Text));
+                subset = subset.filter(row => !row[filterableColumn.Name].toLowerCase().startsWith(filterableColumn.Filter.Text));
                 break;
             case CompareOperator.endsWith:
-                subset = subset.filter(row => row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
+                subset = subset.filter(row => row[filterableColumn.Name].toLowerCase().endsWith(filterableColumn.Filter.Text));
                 break;
             case CompareOperator.notEndsWith:
-                subset = subset.filter(row => !row[filterableColumn.Name].endsWith(filterableColumn.Filter.Text));
+                subset = subset.filter(row => !row[filterableColumn.Name].toLowerCase().endsWith(filterableColumn.Filter.Text));
                 break;
             // TODO: check for types
             case CompareOperator.gt:
@@ -146,10 +146,12 @@ function getAggregatePayload(request, subset) {
                 value = _.meanBy(subset, column.Name);
                 break;
             case AggregationFunction.max:
-                value = _.maxBy(subset, column.Name);
+                // .maxBy returns the object containing the max value
+                value = _.maxBy(subset, column.Name)[column.Name];
                 break;
             case AggregationFunction.min:
-                value = _.minBy(subset, column.Name);
+                // .minBy returns the object containing the min value
+                value = _.minBy(subset, column.Name)[column.Name];
                 break;
             case AggregationFunction.count:
                 value = subset.length;

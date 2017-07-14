@@ -7,15 +7,15 @@ describe("tubular", function () {
         expect(tubular.createGridResponse).toBeDefined();
     });
 
-    it(" must failed when no columns", () => {
+    it(" must fail when no columns", () => {
         expect(() => tubular.createGridResponse(new GridDataRequest(), {})).toThrow('No Columns specified on the request');
     });
 
-    it(" must failed when no request", () => {
+    it(" must fail when no request", () => {
         expect(() => tubular.createGridResponse(null, {})).toThrow('"request" cannot be null');
     });
 
-    it(" must failed when no subset", () => {
+    it(" must fail when no subset", () => {
         expect(() => tubular.createGridResponse(new GridDataRequest(), null)).toThrow('"subset" cannot be null');
     });
 });
