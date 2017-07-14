@@ -605,6 +605,34 @@ describe("jsondata connector", function () {
                     done();
                 });
         });
+
+        it("fails due to unknwon Compare Operator", () => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 48,
+                totalRecordCount = 50;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 1,
+                            Argument: [50],
+                            Operator: 'Unknown',
+                            HasFilter: false
+                        }
+                    }
+                ]
+            });
+
+            expect(() => tubular.createGridResponse(request, data)).toThrow("Unsupported Compare Operator");
+        });
     });
 
     describe("Sort", function () {
@@ -976,6 +1004,32 @@ describe("jsondata connector", function () {
 
                     done();
                 });
+        });
+
+        it("fails due to unknwon aggregate", () => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 50,
+                totalRecordCount = 50;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Unknown'
+                    }
+                ]
+            });
+
+            expect(() => tubular.createGridResponse(request, data)).toThrow("Unsupported aggregate function");
         });
     });
 });

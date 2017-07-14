@@ -103,6 +103,8 @@ function applyFiltering(request, subset) {
             case CompareOperator.between:
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text && row[filterableColumn.Name] < filterableColumn.Filter.Argument[0]);
                 break;
+            default:
+                throw "Unsupported Compare Operator";
         }
     });
 
