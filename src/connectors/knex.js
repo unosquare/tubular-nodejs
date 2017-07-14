@@ -6,10 +6,6 @@ var GridDataResponse = require('../grid-data-response');
 
 function getCompareOperator(operator) {
     switch (operator) {
-        case CompareOperator.equals:
-            return '=';
-        case CompareOperator.notEquals:
-            return '!=';
         case CompareOperator.gte:
             return '>=';
         case CompareOperator.gt:
@@ -19,7 +15,7 @@ function getCompareOperator(operator) {
         case CompareOperator.lt:
             return '<';
         default:
-            return null;
+            throw "Unsopported Compare Operator";
     }
 }
 
@@ -195,6 +191,8 @@ function applyFiltering(request, subset) {
             case CompareOperator.between:
                 subset = subset.whereBetween(filterableColumn.Name, [filterableColumn.Filter.Text, filterableColumn.Filter.Argument[0]]);
                 break;
+            default:
+                throw "Unsupported Compare Operator";
         }
     });
 

@@ -1,5 +1,6 @@
 var tubular = require('../tubular')('knex');
 var GridDataRequest = require('../grid-data-request');
+var CompareOperator = require('../compare-operator');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -11,412 +12,1171 @@ var knex = require('knex')({
     }
 });
 
+var totalRecordCount = 599;
+
 describe("knex connector", function () {
-    it(" use free text search", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 31,
-            totalRecordCount = 599;
 
-        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+    describe("Paging", function () {
+        it("skipping first 10 and taking 20", done => {
+            const skip = 10,
+                take = 20,
+                filteredCount = 598;
 
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-            ],
-            Search: {
-                Name: '',
-                Text: 'And',
-                Argument: [],
-                Operator: 'Auto',
-                HasFilter: false
-            }
-        });
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                done();
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'Patricia',
+                            Argument: [],
+                            Operator: CompareOperator.notEquals,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
             });
-    });
 
-    it(" filters by one column", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 1,
-            totalRecordCount = 599;
-
-        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
-
-
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 'JOY',
-                        Argument: [],
-                        Operator: 'Contains',
-                        HasFilter: false
-                    }
-                },
-                { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-            ],
-            Search: {
-                Name: '',
-                Text: 'GEO',
-                Argument: [],
-                Operator: 'Auto',
-                HasFilter: false
-            }
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
         });
+    })
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(1);
-                done();
-            });
-    });
+    describe("Search and Filter", function () {
 
-    it(" combines search and filter", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 1,
-            totalRecordCount = 599;
+        it(" use free text search", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 31;
 
-        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 'ANDREW',
-                        Argument: [],
-                        Operator: 'Equals',
-                        HasFilter: false
-                    }
-                },
-                {
-                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 'PURDY',
-                        Argument: [],
-                        Operator: 'Equals',
-                        HasFilter: false
-                    }
-                },
-                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-            ],
-            Search: {
-                Name: '',
-                Text: 'AND',
-                Argument: [],
-                Operator: 'Auto',
-                HasFilter: false
-            }
-        });
-
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(1);
-                done();
-            });
-    });
-
-    it(" sorts by default column", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 599,
-            totalRecordCount = 599;
-
-        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
-
-
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
-                },
-                {
-                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
-                },
-                {
-                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ],
+                Search: {
+                    Name: '',
+                    Text: 'And',
+                    Argument: [],
+                    Operator: CompareOperator.auto,
+                    HasFilter: false
                 }
-            ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
         });
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                expect(response.Payload[0][0]).toBe('AARON');
-                done();
-            });
-    });
+        it(" filters by one column", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 1;
 
-    it(" sorts by specific column", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 599,
-            totalRecordCount = 599;
-
-        let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
-                },
-                {
-                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
-                },
-                {
-                    Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'JOY',
+                            Argument: [],
+                            Operator: CompareOperator.contains,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ],
+                Search: {
+                    Name: '',
+                    Text: 'GEO',
+                    Argument: [],
+                    Operator: CompareOperator.auto,
+                    HasFilter: false
                 }
-            ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(1);
+                    done();
+                });
         });
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                expect(response.Payload[0][1]).toBe('ABNEY');
-                done();
-            });
-    });
+        it(" combines search and filter", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 1;
 
-    it(" sorts by TWO columns", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 599,
-            totalRecordCount = 599;
-
-        let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
-                },
-                {
-                    Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
-                },
-                {
-                    Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, SortDirection: 'Ascending'
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'ANDREW',
+                            Argument: [],
+                            Operator: CompareOperator.equals,
+                            HasFilter: false
+                        }
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'PURDY',
+                            Argument: [],
+                            Operator: CompareOperator.equals,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ],
+                Search: {
+                    Name: '',
+                    Text: 'AND',
+                    Argument: [],
+                    Operator: CompareOperator.auto,
+                    HasFilter: false
                 }
-            ]
-        });
-
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                expect(response.Payload[0][2]).toBe(0);
-                expect(response.Payload[0][1]).toBe('ARCE');
-                done();
             });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(1);
+                    done();
+                });
+        });
     });
 
-    it(" aggregate on one column", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 32,
-            totalRecordCount = 16049;
+    describe("Filter", function () {
+        it("filters using Equals", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 1;
 
-        let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'Patricia',
+                            Argument: [],
+                            Operator: CompareOperator.equals,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
 
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 1,
-                        Argument: [],
-                        Operator: 'Equals',
-                        HasFilter: false
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(1);
+                    done();
+                });
+        });
+
+        it("filters using NotEquals", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 598;
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'Patricia',
+                            Argument: [],
+                            Operator: CompareOperator.notEquals,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
+        });
+
+        it("filters using Contains", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 5;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'ley',
+                            Argument: [],
+                            Operator: CompareOperator.contains,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
+        });
+
+        it("filters using NotContains", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 594;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'ley',
+                            Argument: [],
+                            Operator: CompareOperator.notContains,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
+        });
+
+        it("filters using StartsWith", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 5;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'na',
+                            Argument: [],
+                            Operator: CompareOperator.startsWith,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
+        });
+
+        it("filters using NotStartsWith", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 594;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'na',
+                            Argument: [],
+                            Operator: CompareOperator.notStartsWith,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
+        });
+
+        it("filters using EndsWith", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 8;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'rry',
+                            Argument: [],
+                            Operator: CompareOperator.endsWith,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
+        });
+
+        it("filters using NotEndsWith", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 591;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'rry',
+                            Argument: [],
+                            Operator: CompareOperator.notEndsWith,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
+        });
+
+        it("filters using Gte", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 2;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 598,
+                            Argument: [],
+                            Operator: CompareOperator.gte,
+                            HasFilter: false
+                        }
                     }
-                },
-                {
-                    Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
-                },
-                {
-                    Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
-                }
-            ]
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
         });
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
+        it("filters using Gt", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 1;
 
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                expect(response.AggregationPayload).toBeDefined();
-                expect(response.AggregationPayload.amount).toBeDefined(0);
-                expect(response.AggregationPayload.amount).toBeGreaterThan(0);
-                
-                done();
-            });
-    });
-
-    it(" aggregate on two columns", done => {
-        const skip = 0,
-            take = 10,
-            filteredCount = 32,
-            totalRecordCount = 16049;
-
-        let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
-
-        let request = new GridDataRequest({
-            Skip: skip,
-            Take: take,
-            Counter: 1,
-            Columns: [
-                {
-                    Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 1,
-                        Argument: [],
-                        Operator: 'Equals',
-                        HasFilter: false
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 598,
+                            Argument: [],
+                            Operator: CompareOperator.gt,
+                            HasFilter: false
+                        }
                     }
-                },
-                {
-                    Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
-                },
-                {
-                    Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: 'Count'
-                }
-            ]
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
         });
 
-        tubular.createGridResponse(request, queryBuilder)
-            .then(response => {
+        it("filters using Lte", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 2;
 
-                expect(response.Counter).toBeDefined();
-                expect(response.TotalRecordCount).toBe(totalRecordCount);
-                expect(response.FilteredRecordCount).toBe(filteredCount);
-                expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                expect(response.Payload.length).toBe(take);
-                expect(response.AggregationPayload).toBeDefined();
-                expect(response.AggregationPayload.amount).toBeDefined(0);
-                expect(response.AggregationPayload.amount).toBeGreaterThan(0);
-                expect(response.AggregationPayload.payment_id).toBeDefined(0);
-                expect(response.AggregationPayload.payment_id).toBeGreaterThan(0);
-                
-                done();
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 2,
+                            Argument: [],
+                            Operator: CompareOperator.lte,
+                            HasFilter: false
+                        }
+                    }
+                ]
             });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
+        });
+
+        it("filters using Lt", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 1;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 2,
+                            Argument: [],
+                            Operator: CompareOperator.lt,
+                            HasFilter: false
+                        }
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(filteredCount);
+                    done();
+                });
+        });
+
+        it("filters using Between", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 597;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 2,
+                            Argument: [598],
+                            Operator: CompareOperator.between,
+                            HasFilter: false
+                        }
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(10);
+                    done();
+                });
+        });
+
+        it("fails due to unknwon Compare Operator", () => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 48;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
+                            Name: '',
+                            Text: 2,
+                            Argument: [598],
+                            Operator: 'Unknown',
+                            HasFilter: false
+                        }
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
+
+            expect(() => tubular.createGridResponse(request, queryBuilder)).toThrow("Unsupported Compare Operator");
+        });
     });
 
-    // it(" use all possible aggregates", function () {
-    //     let queryBuilder = knex.select('Title', 'Author', 'Year').from('Books');
+    describe("Sort", function () {
+        it(" sorts by default column", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 599,
+                totalRecordCount = 599;
 
-    //     let request = new GridDataRequest({
-    //         Columns: [
-    //             {
-    //                 Name: 'Title', Label: 'Title', Sortable: true, Searchable: true, Filter: {
-    //                     Name: '',
-    //                     Text: 'Hola',
-    //                     Argument: [],
-    //                     Operator: 'Contains',
-    //                     HasFilter: false
-    //                 }
-    //             },
-    //             { Name: 'AverageColumn', Label: 'AverageColumn', Sortable: true, SortDirection: 'Descending', Searchable: true, Aggregate: "Average" },
-    //             { Name: 'CountColumn', Label: 'CountColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Count" },
-    //             { Name: 'SumColumn', Label: 'SumColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Sum" },
-    //             { Name: 'MaxColumn', Label: 'MaxColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Max" },
-    //             { Name: 'MinColumn', Label: 'MinColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "Min" },
-    //             { Name: 'DistinctCountColumn', Label: 'DistinctCountColumn', Sortable: true, SortDirection: 'Ascending', Searchable: true, Aggregate: "DistinctCount" }
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //         ]
-    //     };
 
-    //     let subset = tubular.applyFreeTextSearch(request, queryBuilder);
-    //     subset = tubular.applyFiltering(request, subset);
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                    }
+                ]
+            });
 
-    //     let expected = "select [Title], [Author], [Year] from [Books] where [Title] LIKE '%Hola%'";
-    //     let result = subset.toString();
-    //     expect(result).toBe(expected);
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.Payload[0][0]).toBe('AARON');
+                    done();
+                });
+        });
 
-    //     let avgAggregate = "select avg([AverageColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let countAggregate = "select count([CountColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let sumAggregate = "select sum([SumColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let maxAggregate = "select max([MaxColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let minAggregate = "select min([MinColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let distinctCountAggregate = "select count(distinct [DistinctCountColumn]) from [Books] where [Title] LIKE '%Hola%'";
-    //     let resultAggregate = tubular.getAggregatePayloads(request, subset);
+        it(" sorts by specific column", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 599,
+                totalRecordCount = 599;
 
-    //     expect(resultAggregate.AverageColumn).toBeDefined();
-    //     expect(resultAggregate.AverageColumn.toString()).toBe(avgAggregate);
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-    //     expect(resultAggregate.CountColumn).toBeDefined();
-    //     expect(resultAggregate.CountColumn.toString()).toBe(countAggregate);
 
-    //     expect(resultAggregate.SumColumn).toBeDefined();
-    //     expect(resultAggregate.SumColumn.toString()).toBe(sumAggregate);
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                    }
+                ]
+            });
 
-    //     expect(resultAggregate.MaxColumn).toBeDefined();
-    //     expect(resultAggregate.MaxColumn.toString()).toBe(maxAggregate);
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.Payload[0][1]).toBe('ABNEY');
+                    done();
+                });
+        });
 
-    //     expect(resultAggregate.MinColumn).toBeDefined();
-    //     expect(resultAggregate.MinColumn.toString()).toBe(minAggregate);
+        it(" sorts by TWO columns", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 599,
+                totalRecordCount = 599;
 
-    //     expect(resultAggregate.DistinctCountColumn).toBeDefined();
-    //     expect(resultAggregate.DistinctCountColumn.toString()).toBe(distinctCountAggregate);
-    // });
+            let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
+
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, SortDirection: 'Ascending'
+                    }
+                ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.Payload[0][2]).toBe(0);
+                    expect(response.Payload[0][1]).toBe('ARCE');
+                    done();
+                });
+        });
+    });
+
+    describe("Aggregate", function () {
+
+        it("uses Count", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: 'Count'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.first_name).toBe(totalRecordCount);
+
+                    done();
+                });
+        });
+
+        it("uses Distinct Count", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                    },
+                    {
+                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: 'DistinctCount'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.active).toBe(2);
+
+                    done();
+                });
+        });
+
+        it("uses Max", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Max'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.address_id).toBe(605);
+
+                    done();
+                });
+        });
+
+        it("uses Min", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Min'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.address_id).toBe(5);
+
+                    done();
+                });
+        });
+
+        it("uses Average", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                    },
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Aggregate: 'Average'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(Math.round(response.AggregationPayload.customer_id)).toBe(300);
+
+                    done();
+                });
+        });
+
+        it("uses Sum", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = totalRecordCount;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Sum'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.address_id).toBe(182530);
+
+                    done();
+                });
+        });
+
+        it("fails due to unknwon aggregate", () => {
+            const skip = 0,
+                take = 10;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
+                    },
+                    {
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Unknown'
+                    }
+                ]
+            });
+
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
+
+            expect(() => tubular.createGridResponse(request, queryBuilder)).toThrow("Unsupported aggregate function");
+        });
+
+        it(" aggregate on one column", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 32,
+                totalRecordCount = 16049;
+
+            let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
+
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 1,
+                            Argument: [],
+                            Operator: 'Equals',
+                            HasFilter: false
+                        }
+                    },
+                    {
+                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
+                    },
+                    {
+                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
+                    }
+                ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.amount).toBeDefined(0);
+                    expect(response.AggregationPayload.amount).toBeGreaterThan(0);
+
+                    done();
+                });
+        });
+
+        it(" aggregate on two columns", done => {
+            const skip = 0,
+                take = 10,
+                filteredCount = 32,
+                totalRecordCount = 16049;
+
+            let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 1,
+                            Argument: [],
+                            Operator: 'Equals',
+                            HasFilter: false
+                        }
+                    },
+                    {
+                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
+                    },
+                    {
+                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: 'Count'
+                    }
+                ]
+            });
+
+            tubular.createGridResponse(request, queryBuilder)
+                .then(response => {
+
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    expect(response.AggregationPayload).toBeDefined();
+                    expect(response.AggregationPayload.amount).toBeDefined(0);
+                    expect(response.AggregationPayload.amount).toBeGreaterThan(0);
+                    expect(response.AggregationPayload.payment_id).toBeDefined(0);
+                    expect(response.AggregationPayload.payment_id).toBeGreaterThan(0);
+
+                    done();
+                });
+        });
+    });
 
 });

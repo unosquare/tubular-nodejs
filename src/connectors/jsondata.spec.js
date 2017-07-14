@@ -3,15 +3,53 @@ var data = require('../../spec/data/jsondata.json');
 var GridDataRequest = require('../grid-data-request');
 var CompareOperator = require('../compare-operator');
 
+var totalRecordCount = 50;
+
 describe("jsondata connector", function () {
+
+    describe("Paging", function () {
+        it("skipping first 10 and taking 20", done => {
+            const skip = 10,
+                take = 20,
+                filteredCount = 49;
+
+            let request = new GridDataRequest({
+                Skip: skip,
+                Take: take,
+                Counter: 1,
+                Columns: [
+                    {
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
+                            Name: '',
+                            Text: 'Ignacius',
+                            Argument: [],
+                            Operator: CompareOperator.notEquals,
+                            HasFilter: false
+                        }
+                    },
+                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                ]
+            });
+
+            tubular.createGridResponse(request, data)
+                .then(response => {
+                    expect(response.Counter).toBeDefined();
+                    expect(response.TotalRecordCount).toBe(totalRecordCount);
+                    expect(response.FilteredRecordCount).toBe(filteredCount);
+                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.Payload.length).toBe(take);
+                    done();
+                });
+        });
+    });
 
     describe("Search and Filter", function () {
 
         it(" use free text search", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 2,
-                totalRecordCount = 50;
+                filteredCount = 2;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -45,8 +83,7 @@ describe("jsondata connector", function () {
         it(" filters by one column", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 1,
-                totalRecordCount = 50;
+                filteredCount = 1;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -88,8 +125,7 @@ describe("jsondata connector", function () {
         it(" combines search and filter", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 1,
-                totalRecordCount = 50;
+                filteredCount = 1;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -141,8 +177,7 @@ describe("jsondata connector", function () {
         it("filters using Equals", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 1,
-                totalRecordCount = 50;
+                filteredCount = 1;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -177,8 +212,7 @@ describe("jsondata connector", function () {
         it("filters using NotEquals", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 49,
-                totalRecordCount = 50;
+                filteredCount = 49;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -213,8 +247,7 @@ describe("jsondata connector", function () {
         it("filters using Contains", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 2,
-                totalRecordCount = 50;
+                filteredCount = 2;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -249,8 +282,7 @@ describe("jsondata connector", function () {
         it("filters using NotContains", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 48,
-                totalRecordCount = 50;
+                filteredCount = 48;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -285,8 +317,7 @@ describe("jsondata connector", function () {
         it("filters using StartsWith", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 3,
-                totalRecordCount = 50;
+                filteredCount = 3;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -321,8 +352,7 @@ describe("jsondata connector", function () {
         it("filters using NotStartsWith", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 47,
-                totalRecordCount = 50;
+                filteredCount = 47;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -357,8 +387,7 @@ describe("jsondata connector", function () {
         it("filters using EndsWith", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 2,
-                totalRecordCount = 50;
+                filteredCount = 2;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -393,8 +422,7 @@ describe("jsondata connector", function () {
         it("filters using NotEndsWith", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 48,
-                totalRecordCount = 50;
+                filteredCount = 48;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -429,8 +457,7 @@ describe("jsondata connector", function () {
         it("filters using Gte", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 2,
-                totalRecordCount = 50;
+                filteredCount = 2;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -465,8 +492,7 @@ describe("jsondata connector", function () {
         it("filters using Gt", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 1,
-                totalRecordCount = 50;
+                filteredCount = 1;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -501,8 +527,7 @@ describe("jsondata connector", function () {
         it("filters using Lte", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 2,
-                totalRecordCount = 50;
+                filteredCount = 2;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -537,8 +562,7 @@ describe("jsondata connector", function () {
         it("filters using Lt", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 1,
-                totalRecordCount = 50;
+                filteredCount = 1;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -573,8 +597,7 @@ describe("jsondata connector", function () {
         it("filters using Between", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 48,
-                totalRecordCount = 50;
+                filteredCount = 48;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -609,8 +632,7 @@ describe("jsondata connector", function () {
         it("fails due to unknwon Compare Operator", () => {
             const skip = 0,
                 take = 10,
-                filteredCount = 48,
-                totalRecordCount = 50;
+                filteredCount = 48;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -640,8 +662,7 @@ describe("jsondata connector", function () {
         it("sorts by default column", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -675,8 +696,7 @@ describe("jsondata connector", function () {
         it("sorts by default column and go to page 2", done => {
             const skip = 10,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -710,8 +730,7 @@ describe("jsondata connector", function () {
         it("sorts by specific column", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -745,8 +764,7 @@ describe("jsondata connector", function () {
         it("sorts by TWO columns", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -783,8 +801,7 @@ describe("jsondata connector", function () {
         it("uses Count", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -820,8 +837,7 @@ describe("jsondata connector", function () {
         it("uses Distinct Count", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -861,8 +877,7 @@ describe("jsondata connector", function () {
         it("uses Max", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -898,8 +913,7 @@ describe("jsondata connector", function () {
         it("uses Min", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -935,8 +949,7 @@ describe("jsondata connector", function () {
         it("uses Average", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -972,8 +985,7 @@ describe("jsondata connector", function () {
         it("uses Sum", done => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
@@ -1009,8 +1021,7 @@ describe("jsondata connector", function () {
         it("fails due to unknwon aggregate", () => {
             const skip = 0,
                 take = 10,
-                filteredCount = 50,
-                totalRecordCount = 50;
+                filteredCount = totalRecordCount;
 
             let request = new GridDataRequest({
                 Skip: skip,
