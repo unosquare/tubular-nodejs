@@ -136,7 +136,7 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayload(request, subset) {
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != 'None');
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != AggregationFunction.none);
 
     const results = _.map(aggregateColumns, column => {
         let value;
