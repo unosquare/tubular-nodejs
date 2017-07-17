@@ -37,7 +37,7 @@ app.post('/clients', function (req, res) {
   let knexQuery = knex.select('first_name', 'last_name', 'address_id').from('customer');
   
   // Create the response using tubular
-  res.send(tubular.createGridResponse(request, knexQuery))
+  res.send(tubular.createGridResponse(req, knexQuery))
 })
 
 app.listen(3000, function () {
