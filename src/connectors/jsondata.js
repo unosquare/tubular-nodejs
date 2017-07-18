@@ -56,7 +56,10 @@ function applyFreeTextSearch(request, subset) {
 function applyFiltering(request, subset) {
 
     // Filter by columns
-    let filteredColumns = request.Columns.filter((column) => column.Filter && (column.Filter.Text || column.Filter.Argument));
+    let filteredColumns = request.Columns.filter((column) =>
+        column.Filter &&
+        (column.Filter.Text || column.Filter.Argument) &&
+        column.Filter.Operator != CompareOperator.none);
 
     filteredColumns.forEach(filterableColumn => {
 

@@ -89,7 +89,7 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayload(request, subset) {
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate !=  AggregationFunction.none);
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != AggregationFunction.none);
 
     return Promise.all(_.map(aggregateColumns, column => {
         // Do not disrupt the original query chain
@@ -151,7 +151,10 @@ function applyFreeTextSearch(request, subset) {
 
 function applyFiltering(request, subset) {
     // Filter by columns
-    let filteredColumns = request.Columns.filter((column) => column.Filter && (column.Filter.Text || column.Filter.Argument));
+    let filteredColumns = request.Columns.filter((column) =>
+        column.Filter &&
+        (column.Filter.Text || column.Filter.Argument) &&
+        column.Filter.Operator != CompareOperator.none);
 
     filteredColumns.forEach(filterableColumn => {
 
