@@ -3,7 +3,7 @@ const AggregationFunction = {
     sum: 'Sum',
     average: 'Average',
     count: 'Count',
-    distinctCount: 'Distinctcount',
+    distinctCount: 'DistinctCount',
     max: 'Max',
     min: 'Min'
 }
