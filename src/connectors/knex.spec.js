@@ -1,6 +1,7 @@
 var tubular = require('../tubular')('knex');
 var GridDataRequest = require('../grid-data-request');
 var CompareOperator = require('../compare-operator');
+var AggregationFunction = require('../aggregate-function');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -834,7 +835,7 @@ describe("knex connector", function () {
                 Counter: 1,
                 Columns: [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: 'Count'
+                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: AggregationFunction.count
                     },
                     {
                         Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
@@ -878,7 +879,7 @@ describe("knex connector", function () {
                         Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
                     },
                     {
-                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: 'DistinctCount'
+                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: AggregationFunction.distinctCount
                     }
                 ]
             });
@@ -917,7 +918,7 @@ describe("knex connector", function () {
                         Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Max'
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregationFunction.max
                     }
                 ]
             });
@@ -955,7 +956,7 @@ describe("knex connector", function () {
                         Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Min'
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregationFunction.min
                     }
                 ]
             });
@@ -996,7 +997,7 @@ describe("knex connector", function () {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                     },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Aggregate: 'Average'
+                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Aggregate: AggregationFunction.average
                     }
                 ]
             });
@@ -1034,7 +1035,7 @@ describe("knex connector", function () {
                         Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, SortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Sum'
+                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregationFunction.sum
                     }
                 ]
             });
@@ -1100,12 +1101,12 @@ describe("knex connector", function () {
                             Name: '',
                             Text: 1,
                             Argument: [],
-                            Operator: 'Equals',
+                            Operator: CompareOperator.equals,
                             HasFilter: false
                         }
                     },
                     {
-                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
+                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: AggregationFunction.sum
                     },
                     {
                         Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
@@ -1147,15 +1148,15 @@ describe("knex connector", function () {
                             Name: '',
                             Text: 1,
                             Argument: [],
-                            Operator: 'Equals',
+                            Operator: CompareOperator.equals,
                             HasFilter: false
                         }
                     },
                     {
-                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: 'Sum'
+                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: AggregationFunction.sum
                     },
                     {
-                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: 'Count'
+                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: AggregationFunction.count
                     }
                 ]
             });
