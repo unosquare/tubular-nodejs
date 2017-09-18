@@ -11,6 +11,12 @@ You can also use .NET as backend with [Tubular Dotnet library](https://github.co
 
 Please visit the <a href="http://unosquare.github.io/tubular" target="_blank">Tubular GitHub Page</a> to learn how quickly you can start coding. Don't forget to check out the Tubular Generator which quickly turns models into an awesome UIs!
 
+## npm Installation [![npm version](https://badge.fury.io/js/tubular-nodejs.svg)](https://badge.fury.io/js/tubular-nodejs)
+
+<pre>
+$ npm install tubular-nodejs --save
+</pre>
+
 ## Sample
 
 You can check out the <a href="http://unosquare.github.io/tubular" target="_blank">Tubular GitHub Page</a> to get a few examples. We still need to work on more samples and better documentation, but we feel what we have now will get you up to speed very quickly :).
