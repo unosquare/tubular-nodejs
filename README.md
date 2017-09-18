@@ -40,3 +40,33 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 });
 ```
+
+Or you can just use the following snippet to use our <a href="http://knexjs.org/">Knex.js</a> connector.
+
+```js
+const express = require('express');
+const app = express();
+
+var tbNode = require('tubular-nodejs')('knexjs');
+var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+        host: 'yourhost',
+        user: 'youruser',
+        port: 3306,
+        password: '',
+        database: 'yourdatabase'
+    }
+});
+
+app.post('/clients', function (req, res) {
+  let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('clients');
+  tbNode.createGridResponse(req.body, queryBuilder).then(function(response){
+    return res.json(response);
+  });
+});
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!')
+});
+```
