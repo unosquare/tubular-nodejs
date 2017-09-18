@@ -59,13 +59,14 @@ function applyFiltering(request, subset) {
     let filteredColumns = request.Columns.filter((column) =>
         column.Filter &&
         (column.Filter.Text || column.Filter.Argument) &&
-        column.Filter.Operator != CompareOperator.none);
+        column.Filter &&
+        column.Filter.Operator.toLowerCase() != CompareOperator.none);
 
     filteredColumns.forEach(filterableColumn => {
 
         request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
 
-        switch (filterableColumn.Filter.Operator) {
+        switch (filterableColumn.Filter.Operator.toLowerCase()) {
             case CompareOperator.equals:
                 subset = subset.filter(row => row[filterableColumn.Name] == filterableColumn.Filter.Text);
                 break;
@@ -139,11 +140,11 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayload(request, subset) {
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != AggregationFunction.none);
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate.toLowerCase() != AggregationFunction.none);
 
     const results = _.map(aggregateColumns, column => {
         let value;
-        switch (column.Aggregate) {
+        switch (column.Aggregate.toLowerCase()) {
             case AggregationFunction.sum:
                 value = _.sumBy(subset, column.Name);
                 break;

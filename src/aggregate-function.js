@@ -1,11 +1,11 @@
 const AggregationFunction = {
-    none: 'None',
-    sum: 'Sum',
-    average: 'Average',
-    count: 'Count',
-    distinctCount: 'DistinctCount',
-    max: 'Max',
-    min: 'Min'
+    none: 'none',
+    sum: 'sum',
+    average: 'average',
+    count: 'count',
+    distinctCount: 'distinctcount',
+    max: 'max',
+    min: 'min'
 }
 
 module.exports = AggregationFunction;
