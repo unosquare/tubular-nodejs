@@ -21,31 +21,19 @@ $ npm install tubular-nodejs --save
 
 You can check out the <a href="http://unosquare.github.io/tubular" target="_blank">Tubular GitHub Page</a> to get a few examples. We still need to work on more samples and better documentation, but we feel what we have now will get you up to speed very quickly :).
 
-Use the following snippet to use <a href="https://expressjs.com/" target="_blank">express</a> to handle a Tubular Grid request/response  with <a href="http://knexjs.org/" target="_blank">KnexJS</a> as a connector.
+Use the following snippet if you're using <a href="https://expressjs.com/" target="_blank">express</a> on your backend. That will handle a Tubular Grid request/response with a JSON data connector. You only need a json file like the one at: https://github.com/unosquare/tubular/blob/master/test/integration/tbnodejs/public/sources/clients.json
 
 ```js
 const express = require('express');
 const app = express();
-// Load tubular with the knex connector
-const tubular = require('tubular')('knex');
 
-var knex = require('knex')({
-    client: 'mysql',
-    connection: {
-        host: 'localhost',
-        user: 'someuser',
-        port: 3306,
-        password: '',
-        database: 'sakila'
-    }
-});
+var tbNode = require('tubular-nodejs')('jsondata');
+var data = require('/path/to/some/clients.json/file');
 
 app.post('/clients', function (req, res) {
-  // Create the initial query using knex
-  let knexQuery = knex.select('first_name', 'last_name', 'address_id').from('customer');
-  
-  // Create the response using tubular
-  res.send(tubular.createGridResponse(req, knexQuery))
+  tbNode.createGridResponse(req.body, data).then(function(response){
+    return res.json(response);
+  });
 });
 
 app.listen(3000, function () {
