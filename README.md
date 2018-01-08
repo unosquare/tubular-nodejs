@@ -21,7 +21,7 @@ $ npm install tubular-nodejs --save
 
 You can check out the <a href="http://unosquare.github.io/tubular" target="_blank">Tubular GitHub Page</a> to get a few examples. We still need to work on more samples and better documentation, but we feel what we have now will get you up to speed very quickly :).
 
-Use the following snippet if you're using <a href="https://expressjs.com/" target="_blank">express</a> on your backend. That will handle a Tubular Grid request/response with a JSON data connector. You only need a json file like the one at: https://github.com/unosquare/tubular/blob/master/test/integration/tbnodejs/public/sources/clients.json
+Use the following snippet if you're using <a href="https://expressjs.com/" target="_blank">express</a> on your backend. That will handle a Tubular Grid request/response with a JSON data connector. You only need a JSON file like the one at https://github.com/unosquare/tubular/blob/master/test/integration/tbnodejs/public/sources/clients.json
 
 ```js
 const express = require('express');
