@@ -108,7 +108,7 @@ function applyFiltering(request, subset) {
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text && row[filterableColumn.Name] < filterableColumn.Filter.Argument[0]);
                 break;
             default:
-                throw "Unsupported Compare Operator";
+                throw 'Unsupported Compare Operator';
         }
     });
 
@@ -168,7 +168,7 @@ function getAggregatePayload(request, subset) {
                 }).length;
                 break;
             default:
-                throw "Unsupported aggregate function";
+                throw 'Unsupported aggregate function';
         }
 
         return { [column.Name]: value };
@@ -177,7 +177,7 @@ function getAggregatePayload(request, subset) {
     return _.reduce(results, _.merge, {});
 }
 
-module.exports = function (options) {
+module.exports = function () {
     return {
         createGridResponse: createGridResponse
     };

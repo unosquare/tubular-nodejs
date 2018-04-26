@@ -1,11 +1,9 @@
-var GridDataRequest = require('./grid-data-request');
-
 module.exports = function Tubular(connectorName, options) {
     var connectorInstance = require(`./connectors/${connectorName}`)(options);
 
     return {
         connector: connectorInstance,
-        createGridResponse: function (request, subset) {
+        createGridResponse: function (request, subset) {    
             if (!request)
                 throw '"request" cannot be null';
 

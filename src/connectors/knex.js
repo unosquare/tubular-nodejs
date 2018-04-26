@@ -15,7 +15,7 @@ function getCompareOperator(operator) {
         case CompareOperator.lt:
             return '<';
         default:
-            throw "Unsupported Compare Operator";
+            throw 'Unsupported Compare Operator';
     }
 }
 
@@ -118,7 +118,7 @@ function getAggregatePayload(request, subset) {
                 copyOfSubset = copyOfSubset.countDistinct(`${column.Name} as tbResult`);
                 break;
             default:
-                throw "Unsupported aggregate function";
+                throw 'Unsupported aggregate function';
         }
 
         return copyOfSubset.then(result => ({ [column.Name]: result[0].tbResult }));
@@ -195,14 +195,14 @@ function applyFiltering(request, subset) {
                 subset = subset.whereBetween(filterableColumn.Name, [filterableColumn.Filter.Text, filterableColumn.Filter.Argument[0]]);
                 break;
             default:
-                throw "Unsupported Compare Operator";
+                throw 'Unsupported Compare Operator';
         }
     });
 
     return subset;
 }
 
-module.exports = function (options) {
+module.exports = function () {
     return {
         createGridResponse: createGridResponse
     };
