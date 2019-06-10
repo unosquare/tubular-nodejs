@@ -1,7 +1,7 @@
 var tubular = require('../tubular')('knex');
-var GridRequest = require('tubular-common/GridRequest');
-var CompareOperators = require('tubular-common/CompareOperators');
-var AggregateFunctions = require('tubular-common/AggregateFunctions');
+var {GridRequest} = require('tubular-common');
+var {CompareOperators} = require('tubular-common');
+var {AggregateFunctions} = require('tubular-common');
 var knex = require('knex')({
     client: 'mysql',
     connection: {

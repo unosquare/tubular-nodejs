@@ -1,5 +1,5 @@
 var tubular = require('./tubular')('jsondata');
-var GridRequest = require('tubular-common/GridRequest');
+var {GridRequest} = require('tubular-common');
 
 describe("tubular", function () {
     it(" must define its interface", function () {

@@ -1,7 +1,7 @@
 var tubular = require('../tubular')('jsondata');
 var data = require('../../spec/data/jsondata.json');
-var GridRequest = require('tubular-common/GridRequest');
-var CompareOperators = require('tubular-common/CompareOperators');
+var {GridRequest} = require('tubular-common');
+var {CompareOperators} = require('tubular-common');
 
 var totalRecordCount = 50;
 

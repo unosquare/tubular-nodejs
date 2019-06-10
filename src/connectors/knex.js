@@ -1,8 +1,8 @@
 var _ = require('lodash');
-var CompareOperators = require('tubular-common/CompareOperators');
-var AggregateFunctions = require('tubular-common/AggregateFunctions');
-var ColumnSortDirection = require('tubular-common/ColumnSortDirection');
-var GridResponse = require('tubular-common/GridResponse');
+var {CompareOperators} = require('tubular-common');
+var {AggregateFunctions} = require('tubular-common');
+var {ColumnSortDirection} = require('tubular-common');
+var {GridResponse} = require('tubular-common');
 
 function getCompareOperators(operator) {
     switch (operator) {
