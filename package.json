@@ -24,7 +24,8 @@
   "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
   "dependencies": {
     "knex": "^0.14.6",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "tubular-common": "^1.4.1"
   },
   "devDependencies": {
     "coveralls": "^3.0.3",

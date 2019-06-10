@@ -1,12 +1,12 @@
 var _ = require('lodash');
-var CompareOperator = require('../compare-operator');
-var AggregationFunction = require('../aggregate-function');
-var SortDirection = require('../sort-direction');
-var GridDataResponse = require('../grid-data-response');
+var CompareOperators = require('tubular-common/CompareOperators');
+var AggregateFunctions = require('tubular-common/CompareOperators');
+var ColumnSortDirection = require('tubular-common/ColumnSortDirection');
+var GridResponse = require('tubular-common/GridResponse');
 
 function createGridResponse(request, subset) {
 
-    let response = new GridDataResponse({
+    let response = new GridResponse({
         Counter: request.Counter,
         TotalRecordCount: subset.length,
         CurrentPage: 1
@@ -41,7 +41,7 @@ function createGridResponse(request, subset) {
 
 function applyFreeTextSearch(request, subset) {
     // Free text-search 
-    if (request.Search && request.Search.Operator == CompareOperator.auto) {
+    if (request.Search && request.Search.Operator == CompareOperators.AUTO) {
         let searchableColumns = _.filter(request.Columns, 'Searchable');
 
         if (searchableColumns.length > 0) {
@@ -60,51 +60,51 @@ function applyFiltering(request, subset) {
         column.Filter &&
         (column.Filter.Text || column.Filter.Argument) &&
         column.Filter &&
-        column.Filter.Operator.toLowerCase() != CompareOperator.none);
+        column.Filter.Operator.toLowerCase() != CompareOperators.NONE);
 
     filteredColumns.forEach(filterableColumn => {
 
         request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
 
         switch (filterableColumn.Filter.Operator.toLowerCase()) {
-            case CompareOperator.equals:
+            case CompareOperators.EQUALS:
                 subset = subset.filter(row => row[filterableColumn.Name] == filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.notEquals:
+            case CompareOperators.NOT_EQUALS:
                 subset = subset.filter(row => row[filterableColumn.Name] != filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.contains:
+            case CompareOperators.CONTAINS:
                 subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) >= 0);
                 break;
-            case CompareOperator.notContains:
+            case CompareOperators.NOT_CONTAINS:
                 subset = subset.filter(row => row[filterableColumn.Name].indexOf(filterableColumn.Filter.Text) < 0);
                 break;
-            case CompareOperator.startsWith:
+            case CompareOperators.STARTS_WITH:
                 subset = subset.filter(row => row[filterableColumn.Name].toLowerCase().startsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperator.notStartsWith:
+            case CompareOperators.NOT_STARTS_WITH:
                 subset = subset.filter(row => !row[filterableColumn.Name].toLowerCase().startsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperator.endsWith:
+            case CompareOperators.ENDS_WITH:
                 subset = subset.filter(row => row[filterableColumn.Name].toLowerCase().endsWith(filterableColumn.Filter.Text));
                 break;
-            case CompareOperator.notEndsWith:
+            case CompareOperators.NOT_ENDS_WITH:
                 subset = subset.filter(row => !row[filterableColumn.Name].toLowerCase().endsWith(filterableColumn.Filter.Text));
                 break;
             // TODO: check for types
-            case CompareOperator.gt:
+            case CompareOperators.GT:
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.gte:
+            case CompareOperators.GTE:
                 subset = subset.filter(row => row[filterableColumn.Name] >= filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.lt:
+            case CompareOperators.LT:
                 subset = subset.filter(row => row[filterableColumn.Name] < filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.lte:
+            case CompareOperators.LTE:
                 subset = subset.filter(row => row[filterableColumn.Name] <= filterableColumn.Filter.Text);
                 break;
-            case CompareOperator.between:
+            case CompareOperators.BETWEEN:
                 subset = subset.filter(row => row[filterableColumn.Name] > filterableColumn.Filter.Text && row[filterableColumn.Name] < filterableColumn.Filter.Argument[0]);
                 break;
             default:
@@ -127,7 +127,7 @@ function applySorting(request, subset) {
 
         _.forEachRight(sortedColumns, column => {
             columns.push(column.Name);
-            orders.push((column.SortDirection == SortDirection.ascending ? 'asc' : 'desc'));
+            orders.push((column.ColumnSortDirection == ColumnSortDirection.ascending ? 'asc' : 'desc'));
         });
 
         subset = _.orderBy(subset, columns, orders);
@@ -140,29 +140,29 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayload(request, subset) {
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate.toLowerCase() != AggregationFunction.none);
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate.toLowerCase() != AggregateFunctions.NONE);
 
     const results = _.map(aggregateColumns, column => {
         let value;
         switch (column.Aggregate.toLowerCase()) {
-            case AggregationFunction.sum:
+            case AggregateFunctions.SUM:
                 value = _.sumBy(subset, column.Name);
                 break;
-            case AggregationFunction.average:
+            case AggregateFunctions.AVERAGE:
                 value = _.meanBy(subset, column.Name);
                 break;
-            case AggregationFunction.max:
+            case AggregateFunctions.MAX:
                 // .maxBy returns the object containing the max value
                 value = _.maxBy(subset, column.Name)[column.Name];
                 break;
-            case AggregationFunction.min:
+            case AggregateFunctions.MIN:
                 // .minBy returns the object containing the min value
                 value = _.minBy(subset, column.Name)[column.Name];
                 break;
-            case AggregationFunction.count:
+            case AggregateFunctions.COUNT:
                 value = subset.length;
                 break;
-            case AggregationFunction.distinctCount:
+            case AggregateFunctions.DISTINCT_COUNT:
                 value = _.uniqWith(subset, (a, b) => {
                     return a[column.Name] == b[column.Name];
                 }).length;

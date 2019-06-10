@@ -1,5 +1,5 @@
 var tubular = require('./tubular')('jsondata');
-var GridDataRequest = require('./grid-data-request');
+var GridRequest = require('tubular-common/GridRequest');
 
 describe("tubular", function () {
     it(" must define its interface", function () {
@@ -8,7 +8,7 @@ describe("tubular", function () {
     });
 
     it(" must fail when no columns", () => {
-        expect(() => tubular.createGridResponse(new GridDataRequest(), {})).toThrow('No Columns specified on the request');
+        expect(() => tubular.createGridResponse(new GridRequest(), {})).toThrow('No Columns specified on the request');
     });
 
     it(" must fail when no request", () => {
@@ -16,6 +16,6 @@ describe("tubular", function () {
     });
 
     it(" must fail when no subset", () => {
-        expect(() => tubular.createGridResponse(new GridDataRequest(), null)).toThrow('"subset" cannot be null');
+        expect(() => tubular.createGridResponse(new GridRequest(), null)).toThrow('"subset" cannot be null');
     });
 });
