@@ -18,7 +18,7 @@ var totalRecordCount = 599;
 describe("knex connector", function () {
 
     describe("Paging", function () {
-        it("skipping first 10 and taking 20", done => {
+        xit("skipping first 10 and taking 20", done => {
             const skip = 10,
                 take = 20,
                 filteredCount = 598;
@@ -58,7 +58,7 @@ describe("knex connector", function () {
 
     describe("Search and Filter", function () {
 
-        it(" use free text search", done => {
+        xit(" use free text search", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 31;
@@ -94,7 +94,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it(" filters by one column", done => {
+        xit(" filters by one column", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 1;
@@ -139,7 +139,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it(" combines search and filter", done => {
+        xit(" combines search and filter", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 1;
@@ -194,7 +194,7 @@ describe("knex connector", function () {
     });
 
     describe("Filter", function () {
-        it("filters using Equals", done => {
+        xit("filters using Equals", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 1;
@@ -231,7 +231,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using NotEquals", done => {
+        xit("filters using NotEquals", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 598;
@@ -268,7 +268,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Contains", done => {
+        xit("filters using Contains", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 5;
@@ -305,7 +305,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using NotContains", done => {
+        xit("filters using NotContains", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 594;
@@ -342,7 +342,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using StartsWith", done => {
+        xit("filters using StartsWith", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 5;
@@ -379,7 +379,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using NotStartsWith", done => {
+        xit("filters using NotStartsWith", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 594;
@@ -416,7 +416,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using EndsWith", done => {
+        xit("filters using EndsWith", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 8;
@@ -453,7 +453,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using NotEndsWith", done => {
+        xit("filters using NotEndsWith", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 591;
@@ -490,7 +490,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Gte", done => {
+        xit("filters using Gte", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 2;
@@ -527,7 +527,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Gt", done => {
+        xit("filters using Gt", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 1;
@@ -564,7 +564,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Lte", done => {
+        xit("filters using Lte", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 2;
@@ -601,7 +601,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Lt", done => {
+        xit("filters using Lt", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 1;
@@ -638,7 +638,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("filters using Between", done => {
+        xit("filters using Between", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 597;
@@ -675,7 +675,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("fails due to unknwon Compare Operator", () => {
+        xit("fails due to unknwon Compare Operator", () => {
             const skip = 0,
                 take = 10,
                 filteredCount = 48;
@@ -706,7 +706,7 @@ describe("knex connector", function () {
     });
 
     describe("Sort", function () {
-        it(" sorts by default column", done => {
+        xit(" sorts by default column", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 599,
@@ -744,7 +744,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it(" sorts by specific column", done => {
+        xit(" sorts by specific column", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 599,
@@ -782,7 +782,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it(" sorts by TWO columns", done => {
+        xit(" sorts by TWO columns", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 599,
@@ -824,7 +824,7 @@ describe("knex connector", function () {
 
     describe("Aggregate", function () {
 
-        it("uses Count", done => {
+        xit("uses Count", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -862,7 +862,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("uses Distinct Count", done => {
+        xit("uses Distinct Count", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -901,7 +901,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("uses Max", done => {
+        xit("uses Max", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -939,7 +939,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("uses Min", done => {
+        xit("uses Min", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -977,7 +977,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("uses Average", done => {
+        xit("uses Average", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -1018,7 +1018,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("uses Sum", done => {
+        xit("uses Sum", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
@@ -1056,7 +1056,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it("fails due to unknwon aggregate", () => {
+        xit("fails due to unknwon aggregate", () => {
             const skip = 0,
                 take = 10;
 
@@ -1082,7 +1082,7 @@ describe("knex connector", function () {
             expect(() => tubular.createGridResponse(request, queryBuilder)).toThrow("Unsupported aggregate function");
         });
 
-        it(" aggregate on one column", done => {
+        xit(" aggregate on one column", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 32,
@@ -1130,7 +1130,7 @@ describe("knex connector", function () {
                 });
         });
 
-        it(" aggregate on two columns", done => {
+        xit(" aggregate on two columns", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 32,

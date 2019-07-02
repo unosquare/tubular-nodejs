@@ -1,16 +1,13 @@
 var _ = require('lodash');
-var {CompareOperators} = require('tubular-common');
-var {AggregateFunctions} = require('tubular-common');
-var {ColumnSortDirection} = require('tubular-common');
-var {GridResponse} = require('tubular-common');
+var { CompareOperators } = require('tubular-common');
+var { AggregateFunctions } = require('tubular-common');
+var { ColumnSortDirection } = require('tubular-common');
+var { GridResponse } = require('tubular-common');
 
 function createGridResponse(request, subset) {
-
-    let response = new GridResponse({
-        Counter: request.Counter,
-        TotalRecordCount: subset.length,
-        CurrentPage: 1
-    });
+    let response = new GridResponse(request.Counter);
+    response.TotalRecordCount = subset.length;
+    response.CurrentPage = 1;
 
     subset = applyFreeTextSearch(request, subset);
     subset = applyFiltering(request, subset);
@@ -54,19 +51,18 @@ function applyFreeTextSearch(request, subset) {
 }
 
 function applyFiltering(request, subset) {
-
     // Filter by columns
     let filteredColumns = request.Columns.filter((column) =>
         column.Filter &&
         (column.Filter.Text || column.Filter.Argument) &&
         column.Filter &&
-        column.Filter.Operator.toLowerCase() != CompareOperators.NONE);
+        column.Filter.Operator != CompareOperators.NONE);
 
     filteredColumns.forEach(filterableColumn => {
 
         request.Columns.find(column => column.Name == filterableColumn.Name).HasFilter = true;
 
-        switch (filterableColumn.Filter.Operator.toLowerCase()) {
+        switch (filterableColumn.Filter.Operator) {
             case CompareOperators.EQUALS:
                 subset = subset.filter(row => row[filterableColumn.Name] == filterableColumn.Filter.Text);
                 break;
@@ -140,11 +136,11 @@ function applySorting(request, subset) {
 }
 
 function getAggregatePayload(request, subset) {
-    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate.toLowerCase() != AggregateFunctions.NONE);
+    let aggregateColumns = _.filter(request.Columns, column => column.Aggregate && column.Aggregate != AggregateFunctions.NONE);
 
     const results = _.map(aggregateColumns, column => {
         let value;
-        switch (column.Aggregate.toLowerCase()) {
+        switch (column.Aggregate) {
             case AggregateFunctions.SUM:
                 value = _.sumBy(subset, column.Name);
                 break;
