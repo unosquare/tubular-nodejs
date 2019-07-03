@@ -123,7 +123,7 @@ function applySorting(request, subset) {
 
         _.forEachRight(sortedColumns, column => {
             columns.push(column.Name);
-            orders.push((column.ColumnSortDirection == ColumnSortDirection.ascending ? 'asc' : 'desc'));
+            orders.push((column.ColumnSortDirection == ColumnSortDirection.ASCENDING ? 'asc' : 'desc'));
         });
 
         subset = _.orderBy(subset, columns, orders);

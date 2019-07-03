@@ -19,17 +19,15 @@ describe("knex connector", function () {
 
     describe("Paging", function () {
         xit("skipping first 10 and taking 20", done => {
-            const skip = 10,
-                take = 20,
-                filteredCount = 598;
+            const page = 1,
+                  take = 20,
+                  filteredCount = 598;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
+            console.log(queryBuilder);
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -41,8 +39,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                page,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -59,29 +59,21 @@ describe("knex connector", function () {
     describe("Search and Filter", function () {
 
         xit(" use free text search", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 31;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
                 ],
-                Search: {
-                    Name: '',
-                    Text: 'And',
-                    Argument: [],
-                    Operator: CompareOperators.AUTO,
-                    HasFilter: false
-                }
-            });
+                take,
+                0,
+                'And',
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -95,18 +87,14 @@ describe("knex connector", function () {
         });
 
         xit(" filters by one column", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 1;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -119,14 +107,10 @@ describe("knex connector", function () {
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
                 ],
-                Search: {
-                    Name: '',
-                    Text: 'GEO',
-                    Argument: [],
-                    Operator: CompareOperators.AUTO,
-                    HasFilter: false
-                }
-            });
+                take,
+                0,
+                'GEO'
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -140,18 +124,14 @@ describe("knex connector", function () {
         });
 
         xit(" combines search and filter", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 1;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -172,14 +152,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
                 ],
-                Search: {
-                    Name: '',
-                    Text: 'AND',
-                    Argument: [],
-                    Operator: CompareOperators.AUTO,
-                    HasFilter: false
-                }
-            });
+                take,
+                0,
+                'AND',
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -195,17 +171,13 @@ describe("knex connector", function () {
 
     describe("Filter", function () {
         xit("filters using Equals", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 1;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -217,8 +189,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -232,17 +206,13 @@ describe("knex connector", function () {
         });
 
         xit("filters using NotEquals", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 598;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -254,8 +224,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -269,15 +241,11 @@ describe("knex connector", function () {
         });
 
         xit("filters using Contains", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 5;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -289,8 +257,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -306,15 +276,11 @@ describe("knex connector", function () {
         });
 
         xit("filters using NotContains", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 594;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -326,8 +292,11 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0,
+                '',
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -343,15 +312,11 @@ describe("knex connector", function () {
         });
 
         xit("filters using StartsWith", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 5;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -363,8 +328,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -379,16 +346,13 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using NotStartsWith", done => {
+        it("filters using NotStartsWith", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 594;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -400,8 +364,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -416,16 +382,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using EndsWith", done => {
-            const skip = 0,
-                take = 10,
+        it("filters using EndsWith", done => {
+            const take = 10,
                 filteredCount = 8;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -437,8 +399,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -453,16 +417,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using NotEndsWith", done => {
-            const skip = 0,
-                take = 10,
+        it("filters using NotEndsWith", done => {
+            const take = 10,
                 filteredCount = 591;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -474,8 +434,10 @@ describe("knex connector", function () {
                     },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
-                ]
-            });
+                ],
+                take,
+                0
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -491,15 +453,11 @@ describe("knex connector", function () {
         });
 
         xit("filters using Gte", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 2;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -511,8 +469,10 @@ describe("knex connector", function () {
                             HasFilter: false
                         }
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -527,16 +487,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Gt", done => {
-            const skip = 0,
-                take = 10,
+        it("filters using Gt", done => {
+            const take = 10,
                 filteredCount = 1;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -548,8 +504,10 @@ describe("knex connector", function () {
                             HasFilter: false
                         }
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -564,16 +522,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Lte", done => {
-            const skip = 0,
-                take = 10,
+        it("filters using Lte", done => {
+            const take = 10,
                 filteredCount = 2;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -585,8 +539,10 @@ describe("knex connector", function () {
                             HasFilter: false
                         }
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -602,15 +558,11 @@ describe("knex connector", function () {
         });
 
         xit("filters using Lt", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = 1;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -622,8 +574,10 @@ describe("knex connector", function () {
                             HasFilter: false
                         }
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -638,16 +592,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Between", done => {
-            const skip = 0,
-                take = 10,
+        it("filters using Between", done => {
+            const take = 10,
                 filteredCount = 597;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -659,8 +609,10 @@ describe("knex connector", function () {
                             HasFilter: false
                         }
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -675,16 +627,11 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("fails due to unknwon Compare Operator", () => {
-            const skip = 0,
-                take = 10,
-                filteredCount = 48;
+        it("fails due to unknwon Compare Operator", () => {
+            const take = 10;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
                     { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
                     {
@@ -693,11 +640,13 @@ describe("knex connector", function () {
                             Text: 2,
                             Argument: [598],
                             Operator: 'Unknown',
-                            HasFilter: false
-                        }
+                            HasFilter: false,
+                        },
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'customer_id').from('customer');
 
@@ -706,7 +655,7 @@ describe("knex connector", function () {
     });
 
     describe("Sort", function () {
-        xit(" sorts by default column", done => {
+        it(" sorts by default column", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = 599,
@@ -715,11 +664,8 @@ describe("knex connector", function () {
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
                     },
@@ -729,8 +675,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -744,20 +692,15 @@ describe("knex connector", function () {
                 });
         });
 
-        xit(" sorts by specific column", done => {
-            const skip = 0,
-                take = 10,
+        it(" sorts by specific column", done => {
+            const take = 10,
                 filteredCount = 599,
                 totalRecordCount = 599;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest([
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
                     },
@@ -767,8 +710,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -782,20 +727,16 @@ describe("knex connector", function () {
                 });
         });
 
-        xit(" sorts by TWO columns", done => {
-            const skip = 0,
-                take = 10,
+        it(" sorts by TWO columns", done => {
+            const take = 10,
                 filteredCount = 599,
                 totalRecordCount = 599;
 
             let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
                     },
@@ -805,8 +746,10 @@ describe("knex connector", function () {
                     {
                         Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, ColumnSortDirection: 'Ascending'
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -824,16 +767,12 @@ describe("knex connector", function () {
 
     describe("Aggregate", function () {
 
-        xit("uses Count", done => {
-            const skip = 0,
-                take = 10,
+        it("uses Count", done => {
+            const take = 10,
                 filteredCount = totalRecordCount;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: AggregateFunctions.COUNT
                     },
@@ -843,8 +782,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -862,16 +803,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("uses Distinct Count", done => {
+        it("uses Distinct Count", done => {
             const skip = 0,
                 take = 10,
                 filteredCount = totalRecordCount;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest([
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
                     },
@@ -881,8 +818,10 @@ describe("knex connector", function () {
                     {
                         Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.DISTINCT_COUNT
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'active').from('customer');
 
@@ -901,16 +840,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("uses Max", done => {
-            const skip = 0,
-                take = 10,
+        it("uses Max", done => {
+            const take = 10,
                 filteredCount = totalRecordCount;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
                     },
@@ -920,8 +855,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.MAX
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -939,16 +876,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("uses Min", done => {
-            const skip = 0,
-                take = 10,
+        it("uses Min", done => {
+            const take = 10,
                 filteredCount = totalRecordCount;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
                     },
@@ -958,8 +891,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.MIN
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
@@ -977,16 +912,11 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("uses Average", done => {
-            const skip = 0,
-                take = 10,
-                filteredCount = totalRecordCount;
+        it("uses Average", done => {
+            const take = 10;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
                     },
@@ -999,8 +929,10 @@ describe("knex connector", function () {
                     {
                         Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.AVERAGE
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
 
@@ -1018,16 +950,11 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("uses Sum", done => {
-            const skip = 0,
-                take = 10,
+        it("uses Sum", done => {
+            const take = 10,
                 filteredCount = totalRecordCount;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest([
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
                     },
@@ -1037,8 +964,10 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.SUM
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
 
@@ -1056,15 +985,12 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("fails due to unknwon aggregate", () => {
+        it("fails due to unknwon aggregate", () => {
             const skip = 0,
                 take = 10;
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
                     },
@@ -1074,28 +1000,26 @@ describe("knex connector", function () {
                     {
                         Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Unknown'
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             let queryBuilder = knex.select('first_name', 'last_name', 'address_id', 'customer_id').from('customer');
 
             expect(() => tubular.createGridResponse(request, queryBuilder)).toThrow("Unsupported aggregate function");
         });
 
-        xit(" aggregate on one column", done => {
-            const skip = 0,
-                take = 10,
+        it(" aggregate on one column", done => {
+            const take = 10,
                 filteredCount = 32,
                 totalRecordCount = 16049;
 
             let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
 
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -1111,8 +1035,10 @@ describe("knex connector", function () {
                     {
                         Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
@@ -1130,19 +1056,15 @@ describe("knex connector", function () {
                 });
         });
 
-        xit(" aggregate on two columns", done => {
-            const skip = 0,
-                take = 10,
+        it(" aggregate on two columns", done => {
+            const take = 10,
                 filteredCount = 32,
                 totalRecordCount = 16049;
 
             let queryBuilder = knex.select('customer_id', 'amount', 'payment_id').from('payment');
 
-            let request = new GridRequest({
-                Skip: skip,
-                Take: take,
-                Counter: 1,
-                Columns: [
+            let request = new GridRequest(
+                [
                     {
                         Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
                             Name: '',
@@ -1158,8 +1080,10 @@ describe("knex connector", function () {
                     {
                         Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.COUNT
                     }
-                ]
-            });
+                ],
+                take,
+                0,
+            );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {

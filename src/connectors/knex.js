@@ -79,7 +79,7 @@ function applySorting(request, subset) {
     if (sortedColumns.length > 0) {
         sortedColumns = _.sortBy(sortedColumns, ['SortOrder']);
 
-        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.ColumnSortDirection == ColumnSortDirection.ascending ? 'asc' : 'desc')));
+        _.forEachRight(sortedColumns, column => subset.orderBy(column.Name, (column.ColumnSortDirection == ColumnSortDirection.ASCENDING ? 'asc' : 'desc')));
     } else {
         // Default sorting
         subset = subset.orderBy(request.Columns[0].Name, 'asc');
@@ -152,9 +152,9 @@ function applyFreeTextSearch(request, subset) {
 function applyFiltering(request, subset) {
     // Filter by columns
     let filteredColumns = request.Columns.filter((column) =>
-        column.Filter &&
+        (column.Filter &&
         (column.Filter.Text || column.Filter.Argument) &&
-        column.Filter.Operator != CompareOperators.NONE);
+        column.Filter.Operator != CompareOperators.NONE));
 
     filteredColumns.forEach(filterableColumn => {
 
