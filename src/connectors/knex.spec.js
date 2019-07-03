@@ -18,7 +18,7 @@ var totalRecordCount = 599;
 describe("knex connector", function () {
 
     describe("Paging", function () {
-        xit("skipping first 10 and taking 20", done => {
+        it("skipping first 10 and taking 20", done => {
             const page = 1,
                   take = 20,
                   filteredCount = 598;
@@ -58,7 +58,7 @@ describe("knex connector", function () {
 
     describe("Search and Filter", function () {
 
-        xit(" use free text search", done => {
+        it(" use free text search", done => {
             const take = 10,
                 filteredCount = 31;
 
@@ -86,7 +86,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit(" filters by one column", done => {
+        it(" filters by one column", done => {
             const take = 10,
                 filteredCount = 1;
 
@@ -123,7 +123,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit(" combines search and filter", done => {
+        it(" combines search and filter", done => {
             const take = 10,
                 filteredCount = 1;
 
@@ -170,7 +170,7 @@ describe("knex connector", function () {
     });
 
     describe("Filter", function () {
-        xit("filters using Equals", done => {
+        it("filters using Equals", done => {
             const take = 10,
                 filteredCount = 1;
 
@@ -205,7 +205,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using NotEquals", done => {
+        it("filters using NotEquals", done => {
             const take = 10,
                 filteredCount = 598;
 
@@ -240,7 +240,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Contains", done => {
+        it("filters using Contains", done => {
             const take = 10,
                 filteredCount = 5;
 
@@ -275,7 +275,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using NotContains", done => {
+        it("filters using NotContains", done => {
             const take = 10,
                 filteredCount = 594;
 
@@ -311,7 +311,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using StartsWith", done => {
+        it("filters using StartsWith", done => {
             const take = 10,
                 filteredCount = 5;
 
@@ -452,7 +452,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Gte", done => {
+        it("filters using Gte", done => {
             const take = 10,
                 filteredCount = 2;
 
@@ -557,7 +557,7 @@ describe("knex connector", function () {
                 });
         });
 
-        xit("filters using Lt", done => {
+        it("filters using Lt", done => {
             const take = 10,
                 filteredCount = 1;
 
