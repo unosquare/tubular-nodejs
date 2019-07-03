@@ -19,12 +19,10 @@ describe("knex connector", function () {
 
     describe("Paging", function () {
         it("skipping first 10 and taking 20", done => {
-            const page = 1,
-                  take = 20,
+            const take = 20,
                   filteredCount = 598;
 
-            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
-            console.log(queryBuilder);
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer'); 
 
             let request = new GridRequest(
                 [
@@ -41,7 +39,7 @@ describe("knex connector", function () {
                     { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
                 ],
                 take,
-                page,
+                0,
             );
 
             tubular.createGridResponse(request, queryBuilder)
