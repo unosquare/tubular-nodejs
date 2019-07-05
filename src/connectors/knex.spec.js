@@ -802,8 +802,7 @@ describe("knex connector", function () {
         });
 
         it("uses Distinct Count", done => {
-            const skip = 0,
-                take = 10,
+            const take = 10,
                 filteredCount = totalRecordCount;
 
             let request = new GridRequest([
@@ -912,6 +911,7 @@ describe("knex connector", function () {
 
         it("uses Average", done => {
             const take = 10;
+            filteredCount = totalRecordCount;
 
             let request = new GridRequest(
                 [
@@ -984,8 +984,7 @@ describe("knex connector", function () {
         });
 
         it("fails due to unknwon aggregate", () => {
-            const skip = 0,
-                take = 10;
+            const take = 10;
 
             let request = new GridRequest(
                 [
