@@ -1,8 +1,7 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b9d8a3ea1c8540e78390bb6321f8ac34)](https://app.codacy.com/app/UnosquareLabs/tubular-nodejs?utm_source=github.com&utm_medium=referral&utm_content=unosquare/tubular-nodejs&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/unosquare/tubular-nodejs.svg?branch=master)](https://travis-ci.org/unosquare/tubular-nodejs)
 [![Coverage Status](https://coveralls.io/repos/github/unosquare/tubular-nodejs/badge.svg?branch=master)](https://coveralls.io/github/unosquare/tubular-nodejs?branch=master)
 
-![Tubular Node.js](http://unosquare.github.io/tubular/assets/tubular.png)
+![Tubular Node.js](http://unosquare.github.io/tubular-angular/assets/tubular.png)
 
 :star: *Please star this project if you find it useful!*
 
