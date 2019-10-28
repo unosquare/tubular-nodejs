@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
   "dependencies": {
-    "knex": "^0.19.3",
+    "knex": "^0.20.0",
     "lodash": "^4.17.15",
     "tubular-common": "^2.0.0"
   },
