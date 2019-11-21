@@ -28,3 +28,4 @@ jobs:
         npm test
       env:
         CI: true
+    - run: npm run coverage
