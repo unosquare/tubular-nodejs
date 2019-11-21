@@ -27,6 +27,10 @@ jobs:
         npm ci
         npm test
         npm run coverage
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Coverage ${{ matrix.node-version }}
+        path: coverage.lcov
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
