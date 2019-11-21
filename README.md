@@ -1,5 +1,4 @@
-[![Build Status](https://travis-ci.org/unosquare/tubular-nodejs.svg?branch=master)](https://travis-ci.org/unosquare/tubular-nodejs)
-[![Coverage Status](https://coveralls.io/repos/github/unosquare/tubular-nodejs/badge.svg?branch=master)](https://coveralls.io/github/unosquare/tubular-nodejs?branch=master)
+[![codecov](https://codecov.io/gh/unosquare/tubular-nodejs/branch/master/graph/badge.svg)](https://codecov.io/gh/unosquare/tubular-nodejs)
 
 ![Tubular Node.js](http://unosquare.github.io/tubular-angular/assets/tubular.png)
 
