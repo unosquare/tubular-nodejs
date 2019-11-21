@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src/**",
     "test": "nyc jasmine",
-    "coverage": "nyc report --reporter=text-lcov"
+    "coverage": "nyc report --reporter=xml > coverage.xml"
   },
   "repository": {
     "type": "git",
