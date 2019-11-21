@@ -17,10 +17,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Setup MySQL
+      run: |
+        curl -L -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
+        sed -i 's/ENGINE=InnoDB/ENGINE=MyISAM/g' sakila-db/sakila-schema.sql
+        mysql -u root < sakila-db/sakila-schema.sql
+        mysql -u root < sakila-db/sakila-data.sql
     - name: npm install, build, and test
       run: |
         npm ci
-        npm run build --if-present
         npm test
       env:
         CI: true
