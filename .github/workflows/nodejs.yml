@@ -27,7 +27,6 @@ jobs:
         mysql -u root --password="root" < sakila-db/sakila-data.sql
     - name: npm install, test, and coverage
       run: |
-        npm ci
         npm test
         npm run coverage
     - uses: codecov/codecov-action@v1
