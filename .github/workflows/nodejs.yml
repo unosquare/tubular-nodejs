@@ -3,6 +3,19 @@ name: Node CI
 on: [push]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
+
+    steps:
+    - name: Checkout project
+      uses: actions/checkout@v1
+    - name: Run ESLint
+      uses: stefanoeb/eslint-action@1.0.0
+      
   build:
     runs-on: ubuntu-latest
 
@@ -17,8 +30,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Run ESLint
-      uses: stefanoeb/eslint-action@1.0.0
     - name: Setup MySQL
       run: |
         curl -L -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
@@ -27,6 +38,7 @@ jobs:
         mysql -u root --password="root" < sakila-db/sakila-data.sql
     - name: npm install, test, and coverage
       run: |
+        npm ci
         npm test
         npm run coverage
     - uses: codecov/codecov-action@v1
