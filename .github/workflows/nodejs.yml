@@ -11,13 +11,14 @@ jobs:
         node-version: [10.x, 12.x]
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Run ESLint
-      uses: stefanoeb/eslint-action@1.0.0
+    - name: Checkout project
+      uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Run ESLint
+      uses: stefanoeb/eslint-action@1.0.0
     - name: Setup MySQL
       run: |
         curl -L -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
