@@ -3,17 +3,7 @@ name: Node CI
 on: [push]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout project
-      uses: actions/checkout@v1
-    - name: Run ESLint
-      uses: stefanoeb/eslint-action@1.0.0
-      
   build:
-    needs: [lint]
     runs-on: ubuntu-latest
     
     strategy:
@@ -36,6 +26,7 @@ jobs:
     - name: npm install, test, and coverage
       run: |
         npm ci
+        npm run lint
         npm test
         npm run coverage
     - uses: codecov/codecov-action@v1
