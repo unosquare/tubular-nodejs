@@ -1,7 +1,7 @@
 var tubular = require('../tubular')('knex');
-var {GridRequest} = require('tubular-common');
-var {CompareOperators} = require('tubular-common');
-var {AggregateFunctions} = require('tubular-common');
+var { GridRequest } = require('tubular-common');
+var { CompareOperators } = require('tubular-common');
+var { AggregateFunctions } = require('tubular-common');
 var knex = require('knex')({
     client: 'mysql',
     connection: {
@@ -16,27 +16,32 @@ var knex = require('knex')({
 var totalRecordCount = 599;
 
 describe("knex connector", function () {
+    afterAll((done) => {
+        knex.destroy().then(function () {
+            done();
+        });
+    });
 
     describe("Paging", function () {
         it("skipping first 10 and taking 20", done => {
             const take = 20,
-                  filteredCount = 598;
+                filteredCount = 598;
 
-            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer'); 
+            let queryBuilder = knex.select('first_name', 'last_name', 'address_id').from('customer');
 
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Patricia',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Patricia',
+                            argument: [],
+                            operator: CompareOperators.NotEquals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -44,11 +49,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -64,9 +69,9 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -75,11 +80,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -94,16 +99,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'JOY',
-                            Argument: [],
-                            Operator: CompareOperators.CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'JOY',
+                            argument: [],
+                            operator: CompareOperators.Contains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -112,11 +117,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -131,24 +136,24 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ANDREW',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ANDREW',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'PURDY',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'PURDY',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -157,11 +162,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -177,16 +182,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Patricia',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Patricia',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -194,11 +199,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -212,16 +217,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Patricia',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Patricia',
+                            argument: [],
+                            operator: CompareOperators.NotEquals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -229,11 +234,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -245,16 +250,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ley',
-                            Argument: [],
-                            Operator: CompareOperators.CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ley',
+                            argument: [],
+                            operator: CompareOperators.Contains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -264,11 +269,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -280,16 +285,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ley',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ley',
+                            argument: [],
+                            operator: CompareOperators.NotContains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -300,11 +305,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -316,16 +321,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'na',
-                            Argument: [],
-                            Operator: CompareOperators.STARTS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'na',
+                            argument: [],
+                            operator: CompareOperators.StartsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -335,11 +340,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -352,16 +357,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'na',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_STARTS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'na',
+                            argument: [],
+                            operator: CompareOperators.NotStartsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -371,11 +376,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -387,16 +392,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'rry',
-                            Argument: [],
-                            Operator: CompareOperators.ENDS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'rry',
+                            argument: [],
+                            operator: CompareOperators.EndsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -406,11 +411,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -422,16 +427,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'rry',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_ENDS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'rry',
+                            argument: [],
+                            operator: CompareOperators.NotEndsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -441,11 +446,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -456,15 +461,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 598,
-                            Argument: [],
-                            Operator: CompareOperators.GTE,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 598,
+                            argument: [],
+                            operator: CompareOperators.Gte,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -476,11 +481,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -491,15 +496,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 598,
-                            Argument: [],
-                            Operator: CompareOperators.GT,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 598,
+                            argument: [],
+                            operator: CompareOperators.Gt,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -511,11 +516,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -526,15 +531,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [],
-                            Operator: CompareOperators.LTE,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [],
+                            operator: CompareOperators.Lte,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -546,11 +551,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -561,15 +566,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [],
-                            Operator: CompareOperators.LT,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [],
+                            operator: CompareOperators.Lt,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -581,11 +586,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -596,15 +601,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [598],
-                            Operator: CompareOperators.BETWEEN,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [598],
+                            operator: CompareOperators.Between,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -616,11 +621,11 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -630,15 +635,15 @@ describe("knex connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [598],
-                            Operator: 'Unknown',
-                            HasFilter: false,
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [598],
+                            operator: 'Unknown',
+                            hasFilter: false,
                         },
                     }
                 ],
@@ -665,13 +670,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -680,12 +685,12 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][0]).toBe('AARON');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][0]).toBe('AARON');
                     done();
                 });
         });
@@ -699,28 +704,28 @@ describe("knex connector", function () {
 
 
             let request = new GridRequest([
-                    {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
-                    },
-                    {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
-                    },
-                    {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
-                    }
-                ],
+                {
+                    name: 'first_name', label: 'First Name', sortable: true, searchable: true
+                },
+                {
+                    name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
+                },
+                {
+                    name: 'address_id', label: 'Address Id', sortable: true, searchable: false
+                }
+            ],
                 take,
                 0,
             );
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][1]).toBe('ABNEY');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][1]).toBe('ABNEY');
                     done();
                 });
         });
@@ -736,13 +741,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'active', label: 'Is Active', sortable: true, searchable: false, sortOrder: 3, sortDirection: 'Ascending'
                     }
                 ],
                 take,
@@ -751,13 +756,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][2]).toBe(0);
-                    expect(response.Payload[0][1]).toBe('ARCE');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][2]).toBe(0);
+                    expect(response.payload[0][1]).toBe('ARCE');
                     done();
                 });
         });
@@ -772,13 +777,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: AggregateFunctions.COUNT
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, aggregate: AggregateFunctions.Count
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -789,13 +794,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.first_name).toBe(totalRecordCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.first_name).toBe(totalRecordCount);
 
                     done();
                 });
@@ -806,16 +811,16 @@ describe("knex connector", function () {
                 filteredCount = totalRecordCount;
 
             let request = new GridRequest([
-                    {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
-                    },
-                    {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
-                    },
-                    {
-                        Name: 'active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.DISTINCT_COUNT
-                    }
-                ],
+                {
+                    name: 'first_name', label: 'First Name', sortable: true, searchable: true
+                },
+                {
+                    name: 'last_name', label: 'Last Name', sortable: true, searchable: true
+                },
+                {
+                    name: 'active', label: 'Is Active', sortable: true, searchable: false, aggregate: AggregateFunctions.DistinctCount
+                }
+            ],
                 take,
                 0,
             );
@@ -825,13 +830,13 @@ describe("knex connector", function () {
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
 
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.active).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.active).toBe(2);
 
                     done();
                 });
@@ -844,13 +849,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.MAX
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: AggregateFunctions.Max
                     }
                 ],
                 take,
@@ -861,13 +866,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(605);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(605);
 
                     done();
                 });
@@ -880,13 +885,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.MIN
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: AggregateFunctions.Min
                     }
                 ],
                 take,
@@ -897,13 +902,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(5);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(5);
 
                     done();
                 });
@@ -916,16 +921,16 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     },
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.AVERAGE
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: false, aggregate: AggregateFunctions.Average
                     }
                 ],
                 take,
@@ -936,13 +941,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(Math.round(response.AggregationPayload.customer_id)).toBe(300);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(Math.round(response.aggregationPayload.customer_id)).toBe(300);
 
                     done();
                 });
@@ -953,16 +958,16 @@ describe("knex connector", function () {
                 filteredCount = totalRecordCount;
 
             let request = new GridRequest([
-                    {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
-                    },
-                    {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
-                    },
-                    {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.SUM
-                    }
-                ],
+                {
+                    name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
+                },
+                {
+                    name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
+                },
+                {
+                    name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: AggregateFunctions.Sum
+                }
+            ],
                 take,
                 0,
             );
@@ -971,13 +976,13 @@ describe("knex connector", function () {
 
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(182530);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(182530);
 
                     done();
                 });
@@ -989,13 +994,13 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Unknown'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Unknown'
                     }
                 ],
                 take,
@@ -1018,19 +1023,19 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 1,
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 1,
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
                     {
-                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: AggregateFunctions.SUM
+                        name: 'amount', label: 'Amount', sortable: true, searchable: true, aggregate: AggregateFunctions.Sum
                     },
                     {
-                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false
+                        name: 'payment_id', label: 'Payment Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -1040,14 +1045,13 @@ describe("knex connector", function () {
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
 
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.amount).toBeDefined(0);
-                    expect(response.AggregationPayload.amount).toBeGreaterThan(0);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.amount).toBeGreaterThan(0);
 
                     done();
                 });
@@ -1063,19 +1067,19 @@ describe("knex connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'customer_id', Label: 'Customer Id', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 1,
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'customer_id', label: 'Customer Id', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 1,
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
                     {
-                        Name: 'amount', Label: 'Amount', Sortable: true, Searchable: true, Aggregate: AggregateFunctions.SUM
+                        name: 'amount', label: 'Amount', sortable: true, searchable: true, aggregate: AggregateFunctions.Sum
                     },
                     {
-                        Name: 'payment_id', Label: 'Payment Id', Sortable: true, Searchable: false, Aggregate: AggregateFunctions.COUNT
+                        name: 'payment_id', label: 'Payment Id', sortable: true, searchable: false, aggregate: AggregateFunctions.Count
                     }
                 ],
                 take,
@@ -1085,20 +1089,17 @@ describe("knex connector", function () {
             tubular.createGridResponse(request, queryBuilder)
                 .then(response => {
 
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.amount).toBeDefined(0);
-                    expect(response.AggregationPayload.amount).toBeGreaterThan(0);
-                    expect(response.AggregationPayload.payment_id).toBeDefined(0);
-                    expect(response.AggregationPayload.payment_id).toBeGreaterThan(0);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.amount).toBeGreaterThan(0);
+                    expect(response.aggregationPayload.payment_id).toBeGreaterThan(0);
 
                     done();
                 });
         });
     });
-
 });

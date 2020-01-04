@@ -14,27 +14,27 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest([
                 {
-                    Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                        Name: '',
-                        Text: 'Ignacius',
-                        Argument: [],
-                        Operator: CompareOperators.NOT_EQUALS,
-                        HasFilter: false
+                    name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                        name: '',
+                        text: 'Ignacius',
+                        argument: [],
+                        operator: CompareOperators.NotEquals,
+                        hasFilter: false
                     }
                 },
-                { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
             ],
                 take,
                 0);
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
                     done();
                 });
         });
@@ -44,13 +44,13 @@ describe("jsondata connector", function () {
 
         it(" use free text search", done => {
             const take = 10,
-                  filteredCount = 2;
+                filteredCount = 2;
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -59,11 +59,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(filteredCount);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(filteredCount);
                     done();
                 });
         });
@@ -75,16 +75,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ucy',
-                            Argument: [],
-                            Operator: CompareOperators.CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ucy',
+                            argument: [],
+                            operator: CompareOperators.Contains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -93,11 +93,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -109,37 +109,37 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Merrick',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Merrick',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Probart',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                            HasFilter: false
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Probart',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
                 'rr'
-                );
+            );
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -153,28 +153,28 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Ignacius',
-                            Argument: [],
-                            Operator: CompareOperators.EQUALS,
-                             HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Ignacius',
+                            argument: [],
+                            operator: CompareOperators.Equals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
-                );
+            );
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -186,16 +186,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'Ignacius',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_EQUALS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'Ignacius',
+                            argument: [],
+                            operator: CompareOperators.NotEquals,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -203,11 +203,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -219,16 +219,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ley',
-                            Argument: [],
-                            Operator: CompareOperators.CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ley',
+                            argument: [],
+                            operator: CompareOperators.Contains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -236,11 +236,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(2);
                     done();
                 });
         });
@@ -252,16 +252,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'ley',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_CONTAINS,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'ley',
+                            argument: [],
+                            operator: CompareOperators.NotContains,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -269,11 +269,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -285,16 +285,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'na',
-                            Argument: [],
-                            Operator: CompareOperators.STARTS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'na',
+                            argument: [],
+                            operator: CompareOperators.StartsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -302,11 +302,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(3);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(3);
                     done();
                 });
         });
@@ -318,16 +318,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'na',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_STARTS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'na',
+                            argument: [],
+                            operator: CompareOperators.NotStartsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -335,11 +335,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -351,16 +351,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'rry',
-                            Argument: [],
-                            Operator: CompareOperators.ENDS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'rry',
+                            argument: [],
+                            operator: CompareOperators.EndsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0
@@ -368,11 +368,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(2);
                     done();
                 });
         });
@@ -384,16 +384,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Filter: {
-                            Name: '',
-                            Text: 'rry',
-                            Argument: [],
-                            Operator: CompareOperators.NOT_ENDS_WITH,
-                            HasFilter: false
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, filter: {
+                            name: '',
+                            text: 'rry',
+                            argument: [],
+                            operator: CompareOperators.NotEndsWith,
+                            hasFilter: false
                         }
                     },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
-                    { Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false }
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
+                    { name: 'address_id', label: 'Address Id', sortable: true, searchable: false }
                 ],
                 take,
                 0,
@@ -401,11 +401,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -416,15 +416,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 49,
-                            Argument: [],
-                            Operator: CompareOperators.GTE,
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 49,
+                            argument: [],
+                            operator: CompareOperators.Gte,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -434,11 +434,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(2);
                     done();
                 });
         });
@@ -449,15 +449,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 49,
-                            Argument: [],
-                            Operator: CompareOperators.GT,
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 49,
+                            argument: [],
+                            operator: CompareOperators.Gt,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -467,11 +467,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -482,15 +482,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [],
-                            Operator: CompareOperators.LTE,
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [],
+                            operator: CompareOperators.Lte,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -500,11 +500,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(2);
                     done();
                 });
         });
@@ -515,15 +515,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 2,
-                            Argument: [],
-                            Operator: CompareOperators.LT,
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 2,
+                            argument: [],
+                            operator: CompareOperators.Lt,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -533,11 +533,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(1);
                     done();
                 });
         });
@@ -548,15 +548,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 1,
-                            Argument: [50],
-                            Operator: CompareOperators.BETWEEN,
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 1,
+                            argument: [50],
+                            operator: CompareOperators.Between,
+                            hasFilter: false
                         }
                     }
                 ],
@@ -566,11 +566,11 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(10);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(10);
                     done();
                 });
         });
@@ -580,15 +580,15 @@ describe("jsondata connector", function () {
 
             let request = new GridRequest(
                 [
-                    { Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true },
-                    { Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true },
+                    { name: 'first_name', label: 'First Name', sortable: true, searchable: true },
+                    { name: 'last_name', label: 'Last Name', sortable: true, searchable: true },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Filter: {
-                            Name: '',
-                            Text: 1,
-                            Argument: [50],
-                            Operator: 'Unknown',
-                            HasFilter: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, filter: {
+                            name: '',
+                            text: 1,
+                            argument: [50],
+                            operator: 'Unknown',
+                            hasFilter: false
                         }
                     }
                 ],
@@ -607,15 +607,15 @@ describe("jsondata connector", function () {
                 filteredCount = totalRecordCount;
 
             let request = new GridRequest(
-                 [
+                [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, ColumnSortDirection: 'Descending'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, sortDirection: 'Descending'
                     }
                 ],
                 take,
@@ -624,15 +624,15 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][0]).toBe('Abramo');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][0]).toBe('Abramo');
                     done();
                 }
-            );
+                );
         });
 
         it("sorts by default column and go to page 2", done => {
@@ -643,13 +643,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -658,12 +658,12 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][0]).toBe('Clare');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][0]).toBe('Clare');
                     done();
                 });
         });
@@ -675,13 +675,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -690,12 +690,12 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][1]).toBe('Allworthy');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][1]).toBe('Allworthy');
                     done();
                 });
         });
@@ -707,13 +707,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -722,13 +722,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.Payload[0][2]).toBe(2);
-                    expect(response.Payload[0][1]).toBe('Allworthy');
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.payload[0][2]).toBe(2);
+                    expect(response.payload[0][1]).toBe('Allworthy');
                     done();
                 });
         });
@@ -742,13 +742,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, Aggregate: 'Count'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, aggregate: 'Count'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     }
                 ],
                 take,
@@ -757,13 +757,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.first_name).toBe(50);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.first_name).toBe(50);
 
                     done();
                 });
@@ -776,16 +776,16 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false
                     },
                     {
-                        Name: 'is_active', Label: 'Is Active', Sortable: true, Searchable: false, Aggregate: 'DistinctCount'
+                        name: 'is_active', label: 'Is Active', sortable: true, searchable: false, aggregate: 'DistinctCount'
                     }
                 ],
                 take,
@@ -795,13 +795,13 @@ describe("jsondata connector", function () {
             tubular.createGridResponse(request, data)
                 .then(response => {
 
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.is_active).toBe(2);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.is_active).toBe(2);
 
                     done();
                 });
@@ -814,13 +814,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Max'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Max'
                     }
                 ],
                 take,
@@ -829,13 +829,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(50);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(50);
 
                     done();
                 });
@@ -848,13 +848,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Min'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Min'
                     }
                 ],
                 take,
@@ -863,13 +863,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(1);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(1);
 
                     done();
                 });
@@ -882,13 +882,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Average'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Average'
                     }
                 ],
                 take,
@@ -897,13 +897,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(25.5);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(25.5);
 
                     done();
                 });
@@ -916,13 +916,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Sum'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Sum'
                     }
                 ],
                 take,
@@ -931,13 +931,13 @@ describe("jsondata connector", function () {
 
             tubular.createGridResponse(request, data)
                 .then(response => {
-                    expect(response.Counter).toBeDefined();
-                    expect(response.TotalRecordCount).toBe(totalRecordCount);
-                    expect(response.FilteredRecordCount).toBe(filteredCount);
-                    expect(response.TotalPages).toBe(Math.ceil(filteredCount / take));
-                    expect(response.Payload.length).toBe(take);
-                    expect(response.AggregationPayload).toBeDefined();
-                    expect(response.AggregationPayload.address_id).toBe(1275);
+                    expect(response.counter).toBeDefined();
+                    expect(response.totalRecordCount).toBe(totalRecordCount);
+                    expect(response.filteredRecordCount).toBe(filteredCount);
+                    expect(response.totalPages).toBe(Math.ceil(filteredCount / take));
+                    expect(response.payload.length).toBe(take);
+                    expect(response.aggregationPayload).toBeDefined();
+                    expect(response.aggregationPayload.address_id).toBe(1275);
 
                     done();
                 });
@@ -949,13 +949,13 @@ describe("jsondata connector", function () {
             let request = new GridRequest(
                 [
                     {
-                        Name: 'first_name', Label: 'First Name', Sortable: true, Searchable: true, SortOrder: 2, ColumnSortDirection: 'Ascending'
+                        name: 'first_name', label: 'First Name', sortable: true, searchable: true, sortOrder: 2, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'last_name', Label: 'Last Name', Sortable: true, Searchable: true, SortOrder: 3, ColumnSortDirection: 'Ascending'
+                        name: 'last_name', label: 'Last Name', sortable: true, searchable: true, sortOrder: 3, sortDirection: 'Ascending'
                     },
                     {
-                        Name: 'address_id', Label: 'Address Id', Sortable: true, Searchable: false, Aggregate: 'Unknown'
+                        name: 'address_id', label: 'Address Id', sortable: true, searchable: false, aggregate: 'Unknown'
                     }
                 ],
                 take,

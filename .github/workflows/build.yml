@@ -5,18 +5,16 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
+   
     steps:
     - name: Checkout project
       uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/cache@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        path: ~/.npm
+        key: node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          node-
     - name: Setup MySQL
       run: |
         curl -L -O http://downloads.mysql.com/docs/sakila-db.tar.gz && tar -xzf sakila-db.tar.gz
@@ -27,8 +25,7 @@ jobs:
       run: |
         npm ci
         npm run lint
-        npm test
-        npm run coverage
+        npm run cest
     - uses: codecov/codecov-action@v1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

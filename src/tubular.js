@@ -10,7 +10,7 @@ module.exports = function Tubular(connectorName, options) {
             if (!subset)
                 throw '"subset" cannot be null';
 
-            if (request.Columns == null || request.Columns.length == 0)
+            if (request.columns == null || request.columns.length == 0)
                 throw 'No Columns specified on the request';
 
             return connectorInstance.createGridResponse(request, subset);

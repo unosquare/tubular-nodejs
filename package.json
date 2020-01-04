@@ -4,9 +4,9 @@
   "description": "Tubular Node.js Backend",
   "main": "index.js",
   "scripts": {
-    "lint": "npx eslint src/**",
-    "test": "npx nyc jasmine",
-    "coverage": "npx nyc report --reporter=text-lcov > coverage.lcov"
+    "lint": "eslint src/**/*.js --quiet --fix",
+    "test": "jest --detectOpenHandles",
+    "cest": "jest --detectOpenHandles --collect-coverage"
   },
   "repository": {
     "type": "git",
@@ -23,15 +23,19 @@
   },
   "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
   "dependencies": {
-    "knex": "^0.20.4",
+    "knex": "^0.20.6",
     "lodash": "^4.17.15",
-    "tubular-common": "^2.0.7"
+    "tubular-common": "^3.0.3"
   },
   "devDependencies": {
+    "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "jasmine": "^3.4.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1",
+    "jest": "^24.9.0",
     "mysql": "^2.17.1"
   },
   "nyc": {
