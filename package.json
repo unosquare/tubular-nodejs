@@ -23,9 +23,9 @@
   },
   "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
   "dependencies": {
-    "knex": "^0.20.8",
+    "knex": "^0.20.10",
     "lodash": "^4.17.15",
-    "tubular-common": "^3.1.5"
+    "tubular-common": "^3.1.9"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
