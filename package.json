@@ -23,19 +23,19 @@
   },
   "homepage": "https://github.com/unosquare/tubular-nodejs#readme",
   "dependencies": {
-    "knex": "^0.20.10",
-    "lodash": "^4.17.15",
-    "tubular-common": "^3.1.9"
+    "knex": "^0.21.5",
+    "lodash": "^4.17.20",
+    "tubular-common": "^4.0.18"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.0",
+    "eslint": "^7.7.0",
+    "eslint-config-standard": "^14.1.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "prettier": "^1.19.1",
-    "jest": "^25.1.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "prettier": "^2.1.0",
+    "jest": "^26.4.2",
     "mysql": "^2.18.1"
   },
   "nyc": {
